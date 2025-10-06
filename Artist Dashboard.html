@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Artist Dashboard - Boomplay Clone</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .upload-section {
+      background: #222;
+      padding: 24px;
+      border-radius: 14px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 12px #ffd70022;
+      max-width: 500px;
+    }
+    .upload-section h3 {
+      color: #ffd700;
+      margin-top: 0;
+    }
+    .upload-section input[type="text"] {
+      width: 48%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #181818;
+      color: #ffd700;
+      margin-right: 2%;
+    }
+    .upload-section button {
+      padding: 10px 24px;
+      border-radius: 8px;
+      border: none;
+      background: #ffd700;
+      color: #181818;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .upload-section button:hover {
+      background: #fff;
+      color: #181818;
+    }
+    .uploaded-songs-list {
+      margin-top: 18px;
+      padding-left: 0;
+      list-style: none;
+      max-width: 500px;
+    }
+    .uploaded-songs-list li {
+      background: #222;
+      color: #ffd700;
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-weight: 500;
+      box-shadow: 0 1px 4px #ffd70022;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .remove-upload {
+      background: none;
+      border: none;
+      color: #ffd700;
+      font-size: 1.1em;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: color 0.2s;
+    }
+    .remove-upload:hover {
+      color: #ff4d4d;
+    }
+    @media (max-width: 700px) {
+      .upload-section, .uploaded-songs-list {
+        max-width: 100%;
+      }
+      .upload-section input[type="text"] {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">Boomplay</div>
+    <nav>
+      <ul>
+        <li><a href="artist-dashboard.html" class="active">Dashboard</a></li>
+        <li><a href="upload.html">Upload Music</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="login.html">Logout</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <div class="main-section">
+    <header class="topbar">
+      <span>Welcome, <span id="artist-name"></span>!</span>
+      <div class="user-menu">Artist</div>
+    </header>
+   <main class="main-content">
+  <h2>Artist Dashboard</h2>
+  <p>Here you can upload new songs, view your uploaded tracks, and manage your profile.</p>
+  <section class="upload-section">
+    <h3>Upload New Song</h3>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="text" id="songTitle" placeholder="Song Title" required>
+      <input type="text" id="songArtist" placeholder="Artist Name" required>
+      <input type="text" id="featuredArtist" placeholder="Featured Artist(s)">
+      <input type="text" id="genre" placeholder="Genre" required>
+      <input type="date" id="releaseDate" required>
+      <label style="color:#ffd700;display:block;margin-top:10px;">Music File (mp3):</label>
+      <input type="file" id="musicFile" accept="audio/*" required>
+      <label style="color:#ffd700;display:block;margin-top:10px;">Cover Photo:</label>
+      <input type="file" id="coverPhoto" accept="image/*" required>
+      <button type="submit">Upload</button>
+    </form>
+  </section>
+  <section>
+    <h3>Your Uploaded Songs</h3>
+    <ul id="uploadedSongs" class="uploaded-songs-list"></ul>
+  </section>
+</main>
+  </div>
+  <footer class="player">
+    <div class="player-controls">
+      <button>&lt;&lt;</button>
+      <button>Play</button>
+      <button>&gt;&gt;</button>
+      <span class="song-info">Now Playing: Song Title - Artist</span>
+      <input type="range" min="0" max="100" value="0" class="progress-bar"/>
+      <button>🔊</button>
+    </div>
+    <audio id="audio-player" src="" preload="auto"></audio>
+  </footer>
+  <script>
+    // Show artist name from localStorage
+    document.getElementById('artist-name').textContent = localStorage.getItem('boomplay_username') || 'Artist';
+
+    // Handle song upload (demo, stores in localStorage)
+    const uploadForm = document.getElementById('uploadForm');
+    const uploadedSongs = document.getElementById('uploadedSongs');
+    let songs = JSON.parse(localStorage.getItem('artist_songs') || '[]');
+    function renderSongs() {
+      uploadedSongs.innerHTML = '';
+      songs.forEach((song, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `${song.title} - ${song.artist} <button class="remove-upload" data-idx="${idx}" title="Remove">&times;</button>`;
+        uploadedSongs.appendChild(li);
+      });
+      // Remove song handler
+      document.querySelectorAll('.remove-upload').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const idx = this.getAttribute('data-idx');
+          songs.splice(idx, 1);
+          localStorage.setItem('artist_songs', JSON.stringify(songs));
+          renderSongs();
+        });
+      });
+    }
+    renderSongs();
+    uploadForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const title = document.getElementById('songTitle').value;
+      const artist = document.getElementById('songArtist').value;
+      songs.push({ title, artist });
+      localStorage.setItem('artist_songs', JSON.stringify(songs));
+      renderSongs();
+      uploadForm.reset();
+    });
+ const reader = new FileReader();
+    reader.onload = function(event) {
+      const coverPhoto = event.target.result;
+      // For demo, we won't store the actual music file
+      songs.push({ title, artist, featuredArtist, genre, releaseDate, coverPhoto });
+      localStorage.setItem('artist_songs', JSON.stringify(songs));
+      renderSongs();
+      uploadForm.reset();
+    };
+    if (coverPhotoInput.files[0]) {
+      reader.readAsDataURL(coverPhotoInput.files[0]);
+    } else {
+      // fallback if no cover photo
+      songs.push({ title, artist, featuredArtist, genre, releaseDate, coverPhoto: '' });
+      localStorage.setItem('artist_songs', JSON.stringify(songs));
+      renderSongs();
+      uploadForm.reset();
+    }
+  
+
+  </script>
+</body>
+</html>

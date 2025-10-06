@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Purchase/Subscription - Boomplay Clone</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .purchase-section {
+      background: #222;
+      padding: 32px 28px;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px #ffd70022;
+      color: #ffd700;
+      max-width: 400px;
+      margin: 0 auto;
+      margin-top: 32px;
+    }
+    .purchase-section h3 { margin-top: 0; }
+    .purchase-section button {
+      width: 100%; margin-top: 24px; padding: 12px; border-radius: 8px; border: none; background: #ffd700; color: #181818; font-weight: bold; cursor: pointer;
+    }
+    .purchase-section button:hover { background: #fff; color: #181818; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">Boomplay</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="playlists.html">Playlists</a></li>
+        <li><a href="charts.html">Charts</a></li>
+        <li><a href="podcasts.html">Podcasts</a></li>
+        <li><a href="profile.html">Profile</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <div class="main-section">
+    <header class="topbar">
+      <span>Purchase / Subscription</span>
+      <div class="user-menu">
+        <a href="signup.html" class="signup-btn">Sign Up</a>
+        <a href="login.html" class="login-btn">Login</a>
+      </div>
+    </header>
+    <main class="main-content">
+      <h2>Subscribe to Boomplay Premium</h2>
+      <div class="purchase-section">
+        <h3>Monthly Plan</h3>
+        <div>₦1,000 / month</div>
+        <button>Subscribe Now</button>
+        <h3 style="margin-top:32px;">Yearly Plan</h3>
+        <div>₦10,000 / year</div>
+        <button>Subscribe Now</button>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

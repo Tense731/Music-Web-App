@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Customer Dashboard - Boomplay Clone</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .song-list {
+      display: flex;
+      gap: 24px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .song-card {
+      background: linear-gradient(135deg, #222 60%, #ffd70022 100%);
+      padding: 20px 18px;
+      border-radius: 12px;
+      min-width: 160px;
+      text-align: center;
+      font-size: 1.08rem;
+      font-weight: 500;
+      color: #ffd700;
+      box-shadow: 0 2px 8px #0002;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+      position: relative;
+    }
+    .song-card:hover {
+      transform: translateY(-4px) scale(1.04);
+      box-shadow: 0 4px 16px #ffd70044;
+      background: #ffd700;
+      color: #181818;
+    }
+    .song-img {
+      width: 70px;
+      height: 70px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-bottom: 10px;
+      border: 2px solid #ffd70044;
+    }
+    .song-title {
+      font-weight: bold;
+      margin-bottom: 2px;
+      color: #ffd700;
+    }
+    .song-artist {
+      font-size: 0.95em;
+      color: #fff8;
+      margin-bottom: 8px;
+    }
+    .fav-btn {
+      background: #ffd700;
+      color: #181818;
+      border: none;
+      border-radius: 16px;
+      padding: 6px 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .fav-btn:hover {
+      background: #fff;
+      color: #ffd700;
+    }
+    #favoriteSongs {
+      margin-top: 16px;
+      padding-left: 0;
+      list-style: none;
+    }
+    #favoriteSongs li {
+      background: #222;
+      color: #ffd700;
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-weight: 500;
+      box-shadow: 0 1px 4px #ffd70022;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .remove-fav {
+      background: none;
+      border: none;
+      color: #ffd700;
+      font-size: 1.1em;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: color 0.2s;
+    }
+    .remove-fav:hover {
+      color: #ff4d4d;
+    }
+    @media (max-width: 700px) {
+      .song-list {
+        flex-direction: column;
+        gap: 12px;
+      }
+      .song-card {
+        min-width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">Boomplay</div>
+    <nav>
+      <ul>
+        <li><a href="customer-dashboard.html" class="active">Dashboard</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="playlists.html">Playlists</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="login.html">Logout</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <div class="main-section">
+    <header class="topbar">
+      <span>Welcome, <span id="customer-name"></span>!</span>
+      <div class="user-menu">Customer</div>
+    </header>
+    <main class="main-content">
+      <h2>Customer Dashboard</h2>
+      <p>Browse your library, discover new music, and manage your playlists.</p>
+      <section>
+        <h3>Recommended Songs</h3>
+        <div class="song-list">
+          <div class="song-card" data-title="Calm Down" data-artist="Rema">
+            <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=80&q=80" class="song-img" alt="Calm Down">
+            <div class="song-title">Calm Down</div>
+            <div class="song-artist">Rema</div>
+            <button class="fav-btn">Add to Favorites</button>
+          </div>
+          <div class="song-card" data-title="Essence" data-artist="Wizkid">
+            <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=80&q=80" class="song-img" alt="Essence">
+            <div class="song-title">Essence</div>
+            <div class="song-artist">Wizkid</div>
+            <button class="fav-btn">Add to Favorites</button>
+          </div>
+          <div class="song-card" data-title="Love Nwantiti" data-artist="CKay">
+            <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=80&q=80" class="song-img" alt="Love Nwantiti">
+            <div class="song-title">Love Nwantiti</div>
+            <div class="song-artist">CKay</div>
+            <button class="fav-btn">Add to Favorites</button>
+          </div>
+          <div class="song-card" data-title="Peru" data-artist="Fireboy DML">
+            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=80&q=80" class="song-img" alt="Peru">
+            <div class="song-title">Peru</div>
+            <div class="song-artist">Fireboy DML</div>
+            <button class="fav-btn">Add to Favorites</button>
+          </div>
+        </div>
+        <h3>Your Favorites</h3>
+        <ul id="favoriteSongs"></ul>
+      </section>
+    </main>
+  </div>
+  <footer class="player">
+    <div class="player-controls">
+      <button>&lt;&lt;</button>
+      <button>Play</button>
+      <button>&gt;&gt;</button>
+      <span class="song-info">Now Playing: Song Title - Artist</span>
+      <input type="range" min="0" max="100" value="0" class="progress-bar"/>
+      <button>🔊</button>
+    </div>
+    <audio id="audio-player" src="" preload="auto"></audio>
+  </footer>
+  <script>
+    // Show customer name from localStorage
+    document.getElementById('customer-name').textContent = localStorage.getItem('boomplay_username') || 'Customer';
+
+    // Handle favorites (demo, stores in localStorage)
+    let favorites = JSON.parse(localStorage.getItem('customer_favorites') || '[]');
+    const favoriteSongs = document.getElementById('favoriteSongs');
+    function renderFavorites() {
+      favoriteSongs.innerHTML = '';
+      favorites.forEach((song, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `${song.title} - ${song.artist} <button class="remove-fav" data-idx="${idx}" title="Remove">&times;</button>`;
+        favoriteSongs.appendChild(li);
+      });
+      // Remove favorite handler
+      document.querySelectorAll('.remove-fav').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const idx = this.getAttribute('data-idx');
+          favorites.splice(idx, 1);
+          localStorage.setItem('customer_favorites', JSON.stringify(favorites));
+          renderFavorites();
+        });
+      });
+    }
+    renderFavorites();
+    document.querySelectorAll('.fav-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const card = btn.closest('.song-card');
+        const title = card.getAttribute('data-title');
+        const artist = card.getAttribute('data-artist');
+        // Prevent duplicates
+        if (!favorites.some(fav => fav.title === title && fav.artist === artist)) {
+          favorites.push({ title, artist });
+          localStorage.setItem('customer_favorites', JSON.stringify(favorites));
+          renderFavorites();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

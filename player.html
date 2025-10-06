@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Player - Boomplay Clone</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .full-player {
+      background: #222;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 600px;
+      margin: 40px auto;
+      box-shadow: 0 2px 16px #ffd70022;
+      text-align: center;
+    }
+    .full-player img {
+      width: 180px;
+      height: 180px;
+      border-radius: 16px;
+      margin-bottom: 18px;
+      object-fit: cover;
+      box-shadow: 0 2px 12px #ffd70022;
+    }
+    .lyrics {
+      background: #181818;
+      color: #ffd700;
+      border-radius: 10px;
+      padding: 18px;
+      margin-top: 24px;
+      font-size: 1.1em;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    .queue-list {
+      margin-top: 24px;
+      text-align: left;
+    }
+    .queue-list li {
+      color: #ffd700;
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">Boomplay</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="playlists.html">Playlists</a></li>
+        <li><a href="charts.html">Charts</a></li>
+        <li><a href="podcasts.html">Podcasts</a></li>
+        <li><a href="profile.html">Profile</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <div class="main-section">
+    <header class="topbar">
+      <span>Now Playing</span>
+      <div class="user-menu">
+        <a href="signup.html" class="signup-btn">Sign Up</a>
+        <a href="login.html" class="login-btn">Login</a>
+      </div>
+    </header>
+    <main class="main-content">
+      <div class="full-player">
+        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=300&q=80" alt="Song Cover">
+        <h2>Calm Down</h2>
+        <div>Rema</div>
+        <div style="margin:18px 0;">
+          <button>&lt;&lt;</button>
+          <button>Play</button>
+          <button>&gt;&gt;</button>
+        </div>
+        <input type="range" min="0" max="100" value="30" class="progress-bar" style="width:80%;">
+        <div class="lyrics">
+          <strong>Lyrics:</strong><br>
+          Calm down, calm down...<br>
+          Girl, this your body e put in my heart for lockdown, for lockdown, oh lockdown...
+        </div>
+        <div class="queue-list">
+          <strong>Up Next:</strong>
+          <ul>
+            <li>Essence - Wizkid</li>
+            <li>Love Nwantiti - CKay</li>
+            <li>Peru - Fireboy DML</li>
+          </ul>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

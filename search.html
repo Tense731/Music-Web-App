@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search - Boomplay Clone</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">Boomplay</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="playlists.html">Playlists</a></li>
+        <li><a href="charts.html">Charts</a></li>
+        <li><a href="podcasts.html">Podcasts</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="search.html">Search</a></li>
+        <li><a href="player.html">Player</a></li>
+        <li><a href="notifications.html">Notifications</a></li>
+        <li><a href="settings.html">Settings</a></li>
+        <li><a href="purchase.html">Purchase</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <div class="main-section">
+    <header class="topbar">
+      <form action="search.html" method="get" style="display:inline;">
+        <input class="search" type="text" name="q" placeholder="Search music, artists, albums..." value="Wizkid" />
+      </form>
+      <div class="user-menu">
+        <a href="signup.html" class="signup-btn">Sign Up</a>
+        <a href="login.html" class="login-btn">Login</a>
+      </div>
+    </header>
+    <main class="main-content">
+      <h2>Search Results for "Wizkid"</h2>
+      <section>
+        <h3>Songs</h3>
+        <div class="song-list">
+          <div class="song-card">
+            <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=80&q=80" class="song-img" alt="Essence">
+            <div class="song-title">Essence</div>
+            <div class="song-artist">Wizkid</div>
+          </div>
+          <div class="song-card">
+            <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=80&q=80" class="song-img" alt="Joro">
+            <div class="song-title">Joro</div>
+            <div class="song-artist">Wizkid</div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>Albums</h3>
+        <div class="playlist-list">
+          <div class="playlist-card">
+            <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=80&q=80" class="playlist-img" alt="Made in Lagos">
+            <div class="playlist-title">Made in Lagos</div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>Artists</h3>
+        <div class="playlist-list">
+          <div class="playlist-card">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" class="playlist-img" alt="Wizkid">
+            <div class="playlist-title">Wizkid</div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>Playlists</h3>
+        <div class="playlist-list">
+          <div class="playlist-card">
+            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=80&q=80" class="playlist-img" alt="Wizkid Hits">
+            <div class="playlist-title">Wizkid Hits</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <footer class="player">
+    <div class="player-controls">
+      <button>&lt;&lt;</button>
+      <button>Play</button>
+      <button>&gt;&gt;</button>
+      <span class="song-info">Now Playing: Song Title - Artist</span>
+      <input type="range" min="0" max="100" value="0" class="progress-bar"/>
+      <button>🔊</button>
+    </div>
+    <audio id="audio-player" src="" preload="auto"></audio>
+  </footer>
+  <script src="main.js"></script>
+</body>
+</html>

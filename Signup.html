@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - Boomplay Clone</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .signup-container {
+      max-width: 400px;
+      margin: 60px auto;
+      background: #222;
+      padding: 32px 28px;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px #0005;
+      color: #ffd700;
+    }
+    .signup-container h2 { color: #ffd700; text-align: center; }
+    .signup-container label { display: block; margin-top: 16px; }
+    .signup-container input, .signup-container select {
+      width: 100%; padding: 10px; margin-top: 6px; border-radius: 8px; border: none; background: #181818; color: #ffd700;
+    }
+    .signup-container button {
+      width: 100%; margin-top: 24px; padding: 12px; border-radius: 8px; border: none; background: #ffd700; color: #181818; font-weight: bold; cursor: pointer;
+    }
+    .signup-container button:hover { background: #fff; color: #181818; }
+    .signup-container .login-link { margin-top: 18px; text-align: center; display: block; color: #ffd700; }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <h2>Sign Up</h2>
+    <form id="signupForm">
+      <label for="role">I am signing up as:</label>
+      <select id="role" name="role" required>
+        <option value="">Select role</option>
+        <option value="artist">Artist / Seller</option>
+        <option value="customer">Customer / Buyer</option>
+      </select>
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required />
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+      <button type="submit">Sign Up</button>
+    </form>
+    <a href="login.html" class="login-link">Already have an account? Login</a>
+  </div>
+ <script>
+  document.getElementById('signupForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const role = document.getElementById('role').value;
+    const username = document.getElementById('username').value;
+    localStorage.setItem('boomplay_role', role);
+    localStorage.setItem('boomplay_username', username);
+    alert('Signed up as ' + role + ': ' + username + ' (demo only)');
+    window.location.href = 'login.html';
+  });
+</script>
+</body>
+</html>

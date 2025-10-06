@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings - Boomplay Clone</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .settings-form {
+      background: #222;
+      padding: 32px 28px;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px #ffd70022;
+      color: #ffd700;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .settings-form label { display: block; margin-top: 16px; }
+    .settings-form input, .settings-form select {
+      width: 100%; padding: 10px; margin-top: 6px; border-radius: 8px; border: none; background: #181818; color: #ffd700;
+    }
+    .settings-form button {
+      width: 100%; margin-top: 24px; padding: 12px; border-radius: 8px; border: none; background: #ffd700; color: #181818; font-weight: bold; cursor: pointer;
+    }
+    .settings-form button:hover { background: #fff; color: #181818; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">Boomplay</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="playlists.html">Playlists</a></li>
+        <li><a href="charts.html">Charts</a></li>
+        <li><a href="podcasts.html">Podcasts</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        
+      </ul>
+    </nav>
+  </aside>
+  <div class="main-section">
+    <header class="topbar">
+      <span>Settings</span>
+      <div class="user-menu">
+        <a href="signup.html" class="signup-btn">Sign Up</a>
+        <a href="login.html" class="login-btn">Login</a>
+      </div>
+    </header>
+    <main class="main-content">
+      <h2>Settings</h2>
+      <form class="settings-form">
+        <label for="theme">Theme:</label>
+        <select id="theme">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+        </select>
+        <label for="email">Email:</label>
+        <input type="email" id="email" value="demo@email.com" />
+        <label for="password">Password:</label>
+        <input type="password" id="password" value="password" />
+        <button type="submit">Save Changes</button>
+      </form>
+    </main>
+  </div>
+</body>
+</html>

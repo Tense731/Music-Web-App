@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile - Boomplay Clone</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">Boomplay</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="Library.html">Library</a></li>
+        <li><a href="Playlists.html">Playlists</a></li>
+        <li><a href="Charts.html">Charts</a></li>
+        <li><a href="#">Podcasts</a></li>
+        <li><a href="Profile.html" class="active">Profile</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <div class="main-section">
+    <header class="topbar">
+      <input class="search" type="text" placeholder="Search profile..." />
+      <div class="user-menu">User</div>
+    </header>
+    <main class="main-content">
+      <h2>Your Profile</h2>
+      <div class="profile-info" style="display:flex;flex-direction:column;align-items:center;">
+        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" style="width:90px;height:90px;border-radius:50%;margin-bottom:16px;">
+        <div style="font-weight:bold;font-size:1.2em;">Demo User</div>
+        <div style="color:#ffd700;">demo@email.com</div>
+        <div style="margin-top:16px;">
+          <button style="padding:8px 18px;border-radius:20px;background:#ffd700;color:#181818;border:none;font-weight:bold;cursor:pointer;">Edit Profile</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="player">
+    <div class="player-controls">
+      <button>&lt;&lt;</button>
+      <button>Play</button>
+      <button>&gt;&gt;</button>
+      <span class="song-info">Now Playing: Song Title - Artist</span>
+      <input type="range" min="0" max="100" value="0" class="progress-bar"/>
+      <button>🔊</button>
+    </div>
+    <audio id="audio-player" src="" preload="auto"></audio>
+  </footer>
+  <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Charts - Boomplay Clone</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">Boomplay</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="Library.html">Library</a></li>
+        <li><a href="Playlists.html">Playlists</a></li>
+        <li><a href="Charts.html" class="active">Charts</a></li>
+        <li><a href="#">Podcasts</a></li>
+        <li><a href="Profile.html">Profile</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <div class="main-section">
+    <header class="topbar">
+      <input class="search" type="text" placeholder="Search charts..." />
+      <div class="user-menu">User</div>
+    </header>
+    <main class="main-content">
+      <h2>Top Charts</h2>
+      <div class="song-list">
+        <div class="song-card">
+          <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=80&q=80" alt="Song" class="song-img">
+          <div class="song-title">Feeling</div>
+          <div class="song-artist">Ladipoe ft. Buju</div>
+        </div>
+        <div class="song-card">
+          <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=80&q=80" alt="Song" class="song-img">
+          <div class="song-title">Ginger</div>
+          <div class="song-artist">Wizkid ft. Burna Boy</div>
+        </div>
+        <div class="song-card">
+          <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=80&q=80" alt="Song" class="song-img">
+          <div class="song-title">High</div>
+          <div class="song-artist">Adekunle Gold ft. Davido</div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="player">
+    <div class="player-controls">
+      <button>&lt;&lt;</button>
+      <button>Play</button>
+      <button>&gt;&gt;</button>
+      <span class="song-info">Now Playing: Song Title - Artist</span>
+      <input type="range" min="0" max="100" value="0" class="progress-bar"/>
+      <button>🔊</button>
+    </div>
+    <audio id="audio-player" src="" preload="auto"></audio>
+  </footer>
+  <script src="main.js"></script>
+</body>
+</html>
