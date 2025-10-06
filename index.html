@@ -5,33 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Boomplay Clone - Home</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="logo">Boomplay</div>
     <nav>
       <ul>
-        <li><a href="index.html" class="active">Home</a></li>
-        <li><a href="library.html">Library</a></li>
-        <li><a href="playlists.html">Playlists</a></li>
-        <li><a href="charts.html">Charts</a></li>
-        <li><a href="podcasts.html">Podcasts</a></li>
-        <li><a href="profile.html">Profile</a></li>
-        <li><a href="search.html">Search</a></li>
-        <li><a href="player.html">Player</a></li>
-        <li><a href="notifications.html">Notifications</a></li>
-        <li><a href="settings.html">Settings</a></li>
-        <li><a href="purchase.html">Purchase</a></li>
-
+        <li><a href="index.html" class="active"><i data-lucide="home"></i> Home</a></li>
+        <li><a href="library.html"><i data-lucide="library"></i> Library</a></li>
+        <li><a href="playlists.html"><i data-lucide="list-music"></i> Playlists</a></li>
+        <li><a href="charts.html"><i data-lucide="trending-up"></i> Charts</a></li>
+        <li><a href="profile.html"><i data-lucide="user"></i> Profile</a></li>
+        <li><a href="search.html"><i data-lucide="search"></i> Search</a></li>
+        <li><a href="notifications.html"><i data-lucide="bell"></i> Notifications</a></li>
+        <li><a href="settings.html"><i data-lucide="settings"></i> Settings</a></li>
+        <li><a href="purchase.html"><i data-lucide="shopping-cart"></i> Purchase</a></li>
       </ul>
     </nav>
   </aside>
   <div class="main-section">
     <header class="topbar">
-      <input class="search" type="text" placeholder="Search music, artists, albums..." />
+      <button class="menu-toggle" id="menuToggle">
+        <i data-lucide="menu"></i>
+      </button>
+      <div class="search-container">
+        <i data-lucide="search" class="search-icon"></i>
+        <input class="search" type="text" placeholder="Search music, artists, albums..." />
+      </div>
       <div class="user-menu">
-        <a href="signup.html" class="signup-btn">Sign Up</a>
-        <a href="login.html" class="login-btn">Login</a>
+        <a href="signup.html" class="signup-btn ripple">Sign Up</a>
+        <a href="login.html" class="login-btn ripple">Login</a>
       </div>
     </header>
     <main class="main-content">
@@ -40,7 +44,7 @@
         <div class="banner-img"></div>
       </section>
       <section class="trending">
-        <h2>Trending Songs</h2>
+        <h2><i data-lucide="flame"></i> Trending Songs</h2>
         <div class="song-list">
           <div class="song-card">
             <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=80&q=80" class="song-img" alt="Calm Down">
@@ -55,7 +59,7 @@
         </div>
       </section>
       <section class="playlists">
-        <h2>Recommended Playlists</h2>
+        <h2><i data-lucide="music"></i> Recommended Playlists</h2>
         <div class="playlist-list">
           <div class="playlist-card">
             <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=80&q=80" class="playlist-img" alt="Afro Hits">
@@ -71,15 +75,31 @@
   </div>
   <footer class="player">
     <div class="player-controls">
-      <button>&lt;&lt;</button>
-      <button>Play</button>
-      <button>&gt;&gt;</button>
+      <button><i data-lucide="skip-back"></i></button>
+      <button id="playBtn"><i data-lucide="play"></i></button>
+      <button><i data-lucide="skip-forward"></i></button>
       <span class="song-info">Now Playing: Song Title - Artist</span>
       <input type="range" min="0" max="100" value="0" class="progress-bar"/>
-      <button>🔊</button>
+      <button><i data-lucide="volume-2"></i></button>
     </div>
     <audio id="audio-player" src="" preload="auto"></audio>
   </footer>
+  <script>
+    lucide.createIcons();
+
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('mobile-visible');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+        sidebar.classList.remove('mobile-visible');
+      }
+    });
+  </script>
   <script src="main.js"></script>
 </body>
 </html>

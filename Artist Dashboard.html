@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Artist Dashboard - Boomplay Clone</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     .upload-section {
       background: #222;
@@ -86,27 +87,32 @@
   </style>
 </head>
 <body>
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="logo">Boomplay</div>
     <nav>
       <ul>
-        <li><a href="artist-dashboard.html" class="active">Dashboard</a></li>
-        <li><a href="upload.html">Upload Music</a></li>
-        <li><a href="profile.html">Profile</a></li>
-        <li><a href="login.html">Logout</a></li>
+        <li><a href="artist-dashboard.html" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+        <li><a href="upload.html"><i data-lucide="upload"></i> Upload Music</a></li>
+        <li><a href="profile.html"><i data-lucide="user"></i> Profile</a></li>
+        <li><a href="login.html"><i data-lucide="log-out"></i> Logout</a></li>
       </ul>
     </nav>
   </aside>
   <div class="main-section">
     <header class="topbar">
+      <button class="menu-toggle" id="menuToggle">
+        <i data-lucide="menu"></i>
+      </button>
       <span>Welcome, <span id="artist-name"></span>!</span>
-      <div class="user-menu">Artist</div>
+      <div class="user-menu">
+        <button class="user-menu-button"><i data-lucide="music"></i> Artist</button>
+      </div>
     </header>
    <main class="main-content">
   <h2>Artist Dashboard</h2>
   <p>Here you can upload new songs, view your uploaded tracks, and manage your profile.</p>
   <section class="upload-section">
-    <h3>Upload New Song</h3>
+    <h3><i data-lucide="upload-cloud"></i> Upload New Song</h3>
     <form id="uploadForm" enctype="multipart/form-data">
       <input type="text" id="songTitle" placeholder="Song Title" required>
       <input type="text" id="songArtist" placeholder="Artist Name" required>
@@ -121,22 +127,38 @@
     </form>
   </section>
   <section>
-    <h3>Your Uploaded Songs</h3>
+    <h3 style="color: #ffd700; display: flex; align-items: center; gap: 12px;"><i data-lucide="disc"></i> Your Uploaded Songs</h3>
     <ul id="uploadedSongs" class="uploaded-songs-list"></ul>
   </section>
 </main>
   </div>
   <footer class="player">
     <div class="player-controls">
-      <button>&lt;&lt;</button>
-      <button>Play</button>
-      <button>&gt;&gt;</button>
+      <button><i data-lucide="skip-back"></i></button>
+      <button id="playBtn"><i data-lucide="play"></i></button>
+      <button><i data-lucide="skip-forward"></i></button>
       <span class="song-info">Now Playing: Song Title - Artist</span>
       <input type="range" min="0" max="100" value="0" class="progress-bar"/>
-      <button>🔊</button>
+      <button><i data-lucide="volume-2"></i></button>
     </div>
     <audio id="audio-player" src="" preload="auto"></audio>
   </footer>
+  <script>
+    lucide.createIcons();
+
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('mobile-visible');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+        sidebar.classList.remove('mobile-visible');
+      }
+    });
+  </script>
   <script>
     // Show artist name from localStorage
     document.getElementById('artist-name').textContent = localStorage.getItem('boomplay_username') || 'Artist';

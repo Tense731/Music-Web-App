@@ -5,48 +5,117 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sign Up - Boomplay Clone</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     .signup-container {
-      max-width: 400px;
+      max-width: 420px;
       margin: 60px auto;
-      background: #222;
-      padding: 32px 28px;
-      border-radius: 16px;
-      box-shadow: 0 2px 12px #0005;
+      background: rgba(30, 30, 30, 0.95);
+      padding: 40px 32px;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+      border: 1px solid rgba(255, 215, 0, 0.2);
       color: #ffd700;
+      animation: fadeIn 0.6s ease-out;
     }
-    .signup-container h2 { color: #ffd700; text-align: center; }
-    .signup-container label { display: block; margin-top: 16px; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .signup-container h2 {
+      color: #ffd700;
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .signup-container label {
+      display: block;
+      margin-top: 16px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
     .signup-container input, .signup-container select {
-      width: 100%; padding: 10px; margin-top: 6px; border-radius: 8px; border: none; background: #181818; color: #ffd700;
+      width: 100%;
+      padding: 14px 16px;
+      margin-top: 8px;
+      border-radius: 12px;
+      border: 2px solid rgba(255, 215, 0, 0.2);
+      background: rgba(15, 15, 15, 0.9);
+      color: #ffd700;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+    }
+    .signup-container input:focus, .signup-container select:focus {
+      outline: none;
+      border-color: #ffd700;
+      box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
     }
     .signup-container button {
-      width: 100%; margin-top: 24px; padding: 12px; border-radius: 8px; border: none; background: #ffd700; color: #181818; font-weight: bold; cursor: pointer;
+      width: 100%;
+      margin-top: 32px;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+      color: #0a0a0a;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+      font-size: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .signup-container button:hover { background: #fff; color: #181818; }
-    .signup-container .login-link { margin-top: 18px; text-align: center; display: block; color: #ffd700; }
+    .signup-container button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+    }
+    .signup-container .login-link {
+      margin-top: 24px;
+      text-align: center;
+      display: block;
+      color: #ffd700;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    .signup-container .login-link:hover {
+      color: #ffed4e;
+    }
+    @media (max-width: 480px) {
+      .signup-container {
+        margin: 40px 20px;
+        padding: 32px 24px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="signup-container">
-    <h2>Sign Up</h2>
+    <h2><i data-lucide="user-plus"></i> Sign Up</h2>
     <form id="signupForm">
-      <label for="role">I am signing up as:</label>
+      <label for="role"><i data-lucide="briefcase"></i> I am signing up as:</label>
       <select id="role" name="role" required>
         <option value="">Select role</option>
         <option value="artist">Artist / Seller</option>
         <option value="customer">Customer / Buyer</option>
       </select>
-      <label for="username">Username:</label>
+      <label for="username"><i data-lucide="user"></i> Username:</label>
       <input type="text" id="username" name="username" required />
-      <label for="email">Email:</label>
+      <label for="email"><i data-lucide="mail"></i> Email:</label>
       <input type="email" id="email" name="email" required />
-      <label for="password">Password:</label>
+      <label for="password"><i data-lucide="lock"></i> Password:</label>
       <input type="password" id="password" name="password" required />
       <button type="submit">Sign Up</button>
     </form>
     <a href="login.html" class="login-link">Already have an account? Login</a>
   </div>
+ <script>
+  lucide.createIcons();
+</script>
  <script>
   document.getElementById('signupForm').addEventListener('submit', function(e) {
     e.preventDefault();
