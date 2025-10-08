@@ -16,6 +16,9 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
   <!-- Sidebar Menu -->
   <aside class="sidebar" id="sidebar">
     <div class="logo">Boomplay</div>
@@ -122,24 +125,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     trendingSongs.innerHTML = '<div style="color:#ffd700">No songs uploaded yet.</div>';
   }
 });
-  // initialize icons
   lucide.createIcons();
-
-  const menuToggle = document.getElementById("menuToggle");
-  const sidebar = document.getElementById("sidebar");
-
-  // Toggle sidebar when clicking hamburger
-  menuToggle.addEventListener("click", (e) => {
-    e.stopPropagation(); // prevent closing immediately
-    sidebar.classList.toggle("mobile-visible");
-  });
-
-  // Close sidebar when clicking outside
-  document.addEventListener("click", (e) => {
-    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-      sidebar.classList.remove("mobile-visible");
-    }
-  });
 </script>
 
   <script src="main.js"></script>

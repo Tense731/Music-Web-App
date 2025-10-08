@@ -3,17 +3,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const menuToggle = document.getElementById('menuToggle');
   const sidebar = document.getElementById('sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+  function openSidebar() {
+    if (sidebar) {
+      sidebar.classList.add('mobile-visible');
+      if (sidebarOverlay) {
+        sidebarOverlay.classList.add('active');
+      }
+      if (menuToggle) {
+        menuToggle.classList.add('active');
+      }
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeSidebar() {
+    if (sidebar) {
+      sidebar.classList.remove('mobile-visible');
+      if (sidebarOverlay) {
+        sidebarOverlay.classList.remove('active');
+      }
+      if (menuToggle) {
+        menuToggle.classList.remove('active');
+      }
+      document.body.style.overflow = '';
+    }
+  }
 
   if (menuToggle && sidebar) {
     menuToggle.addEventListener('click', (e) => {
       e.stopPropagation();
-      sidebar.classList.toggle('mobile-visible');
+      if (sidebar.classList.contains('mobile-visible')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
     });
+
+    if (sidebarOverlay) {
+      sidebarOverlay.addEventListener('click', closeSidebar);
+    }
 
     document.addEventListener('click', (e) => {
       if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-        sidebar.classList.remove('mobile-visible');
+        closeSidebar();
       }
+    });
+
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          closeSidebar();
+        }
+      });
     });
   }
 
@@ -24,7 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  document.querySelectorAll('.song-card').forEach(card => {
+  document.querySelectorAll('.song-card').forEach((card, index) => {
+    card.style.animationDelay = `${index * 0.1}s`;
     card.addEventListener('click', function () {
       const songTitle = this.querySelector('.song-title')?.textContent || 'Unknown';
       const songArtist = this.querySelector('.song-artist')?.textContent || 'Unknown Artist';
@@ -32,6 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (songInfo) {
         songInfo.textContent = `Now Playing: ${songTitle} - ${songArtist}`;
       }
+
+      this.style.animation = 'pulse 0.4s ease-out';
+      setTimeout(() => {
+        this.style.animation = '';
+      }, 400);
     });
   });
 
@@ -141,6 +190,12 @@ style.textContent = `
       opacity: 0;
       transform: translate(-50%, -50%) scale(0.8);
     }
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
   }
 `;
 document.head.appendChild(style);

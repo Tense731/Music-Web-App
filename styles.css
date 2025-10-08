@@ -1,3 +1,5 @@
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
     * {
     box-sizing: border-box;
     margin: 0;
@@ -9,7 +11,7 @@
     padding: 0;
     background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
     color: #fff;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Oxygen', sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', 'Oxygen', sans-serif;
     display: flex;
     overflow-x: hidden;
     line-height: 1.6;
@@ -43,8 +45,15 @@
     margin-bottom: 48px;
     letter-spacing: 1px;
     color: #ffd700;
+    font-family: 'Poppins', sans-serif;
     text-shadow: 0 2px 12px rgba(255, 215, 0, 0.4);
     animation: glow 2s ease-in-out infinite alternate;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .logo:hover {
+    transform: scale(1.05);
     }
 
     @keyframes glow {
@@ -149,17 +158,46 @@
 
     .menu-toggle {
     display: none;
-    background: none;
-    border: none;
+    background: rgba(255, 215, 0, 0.1);
+    border: 2px solid rgba(255, 215, 0, 0.3);
     color: #ffd700;
     font-size: 1.5rem;
     cursor: pointer;
-    padding: 8px;
-    transition: transform 0.3s;
+    padding: 10px;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    }
+
+    .menu-toggle::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 215, 0, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+    }
+
+    .menu-toggle:active::before {
+    width: 200px;
+    height: 200px;
     }
 
     .menu-toggle:hover {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(90deg);
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #ffd700;
+    box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
+    }
+
+    .menu-toggle.active {
+    transform: rotate(90deg);
+    background: rgba(255, 215, 0, 0.2);
     }
 
     .search-container {
@@ -265,6 +303,7 @@
     color: #ffd700;
     font-size: 2rem;
     font-weight: 700;
+    font-family: 'Poppins', sans-serif;
     letter-spacing: -0.5px;
     }
 
@@ -291,11 +330,13 @@
     color: #ffd700;
     font-size: 1.75rem;
     font-weight: 700;
+    font-family: 'Poppins', sans-serif;
     margin-bottom: 24px;
     letter-spacing: -0.5px;
     display: flex;
     align-items: center;
     gap: 12px;
+    animation: slideInLeft 0.5s ease-out;
     }
 
     .song-list, .playlist-list {
@@ -333,6 +374,15 @@
     animation: scaleIn 0.5s ease-out backwards;
     }
 
+    .song-card:hover, .playlist-card:hover {
+    animation: bounce 0.6s ease-in-out;
+    }
+
+    @keyframes bounce {
+    0%, 100% { transform: translateY(-8px) scale(1.02); }
+    50% { transform: translateY(-12px) scale(1.03); }
+    }
+
     .song-card:nth-child(1) { animation-delay: 0.1s; }
     .song-card:nth-child(2) { animation-delay: 0.2s; }
     .song-card:nth-child(3) { animation-delay: 0.3s; }
@@ -365,11 +415,6 @@
     opacity: 1;
     }
 
-    .song-card:hover, .playlist-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 12px 32px rgba(255, 215, 0, 0.3);
-    border-color: #ffd700;
-    }
 
     .song-img, .playlist-img {
     width: 100%;
@@ -390,6 +435,7 @@
     font-weight: 600;
     margin-bottom: 6px;
     font-size: 1.05rem;
+    font-family: 'Poppins', sans-serif;
     color: #ffd700;
     }
 
@@ -522,6 +568,7 @@
     margin-bottom: 24px;
     font-size: 1.5rem;
     font-weight: 700;
+    font-family: 'Poppins', sans-serif;
     }
 
     .upload-section input[type="text"],
@@ -709,18 +756,58 @@
     }
     }
 
+    .sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    }
+
+    .sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+    animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+    }
+
     @media (max-width: 768px) {
     .menu-toggle {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .sidebar {
         width: 280px;
         transform: translateX(-100%);
+        box-shadow: 4px 0 40px rgba(0, 0, 0, 0.8);
     }
 
     .sidebar.mobile-visible {
         transform: translateX(0);
+        animation: slideInFromLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideInFromLeft {
+        from {
+            transform: translateX(-100%);
+            opacity: 0.5;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
 
     .main-section {
