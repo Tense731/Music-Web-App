@@ -107,6 +107,29 @@
   </style>
 </head>
 <body>
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <!-- Firebase Auth -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <!-- Firebase Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script>
+    // Your web app's Firebase configuration (copied from login.html)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJYntIHuHfLtlpdYXhwbamPFN9X6ADUhU",
+      authDomain: "music-web-app-ecc1e.firebaseapp.com",
+      projectId: "music-web-app-ecc1e",
+      storageBucket: "music-web-app-ecc1e.appspot.com",
+      messagingSenderId: "214514858457",
+      appId: "1:214514858457:web:7c2170f724a33accd241c8",
+    };
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+  </script>
   <aside class="sidebar" id="sidebar">
     <div class="logo">Boomplay</div>
     <nav>
@@ -193,8 +216,34 @@
     });
   </script>
   <script>
-    // Show customer name from localStorage
-    document.getElementById('customer-name').textContent = localStorage.getItem('boomplay_username') || 'Customer';
+
+    // Show customer name from Firestore with improved debug and delayed redirect
+    auth.onAuthStateChanged(async function(user) {
+      console.log('Auth state changed. User:', user);
+      if (user) {
+        try {
+          const doc = await db.collection('users').doc(user.uid).get();
+          console.log('Fetched user doc:', doc.exists ? doc.data() : null);
+          if (doc.exists) {
+            document.getElementById('customer-name').textContent = doc.data().username || 'Customer';
+            document.getElementById('customer-name').title = '';
+          } else {
+            document.getElementById('customer-name').textContent = 'Customer';
+            document.getElementById('customer-name').title = 'No Firestore user document found.';
+          }
+        } catch (e) {
+          document.getElementById('customer-name').textContent = 'Customer';
+          document.getElementById('customer-name').title = 'Error fetching user: ' + e.message;
+          console.error('Error fetching user from Firestore:', e);
+        }
+      } else {
+        document.getElementById('customer-name').textContent = '';
+        document.getElementById('customer-name').title = 'No user logged in. Redirecting...';
+        setTimeout(function() {
+          window.location.href = 'login.html';
+        }, 1000); // Wait 1s before redirect to avoid race conditions
+      }
+    });
 
     // Handle favorites (demo, stores in localStorage)
     let favorites = JSON.parse(localStorage.getItem('customer_favorites') || '[]');

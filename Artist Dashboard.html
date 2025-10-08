@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <!-- Firebase SDKs for auth/user info (hybrid approach) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Artist Dashboard - Boomplay Clone</title>
@@ -87,12 +93,69 @@
   </style>
 </head>
 <body>
+  <script>
+    // Initialize Supabase
+    const supabaseUrl = 'https://cfpxfhboqgxclomfupas.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcHhmaGJvcWd4Y2xvbWZ1cGFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4Nzc1NjcsImV4cCI6MjA3NTQ1MzU2N30.3AcF36xzKmeSD0Y0gxIl9vezICnUSYTHRQvfMlgHjYQ';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Firebase config (from login.html)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJYntIHuHfLtlpdYXhwbamPFN9X6ADUhU",
+      authDomain: "music-web-app-ecc1e.firebaseapp.com",
+      projectId: "music-web-app-ecc1e",
+      storageBucket: "music-web-app-ecc1e.appspot.com",
+      messagingSenderId: "214514858457",
+      appId: "1:214514858457:web:7c2170f724a33accd241c8",
+    };
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+    const firestore = firebase.firestore();
+    let currentUserId = null; // firebase uid
+    let currentUsername = localStorage.getItem('boomplay_username') || 'Artist';
+
+    // Use Firebase auth to get the current user and username from Firestore
+    auth.onAuthStateChanged(async function(user) {
+      console.log('Auth state changed (hybrid):', user);
+      // Show debug info
+      const debugInfo = document.getElementById('debugInfo');
+      if (debugInfo) {
+        debugInfo.style.display = 'block';
+        debugInfo.innerHTML = `<b>Debug:</b><br>
+          Firebase user: <pre>${JSON.stringify(user, null, 2)}</pre><br>
+          currentUserId: <b>${user ? user.uid : 'null'}</b><br>
+          Auth error? Check browser console.`;
+      }
+      if (user) {
+        currentUserId = user.uid;
+        try {
+          const doc = await firestore.collection('users').doc(user.uid).get();
+          if (doc.exists) {
+            currentUsername = doc.data().username || currentUsername;
+            localStorage.setItem('boomplay_username', currentUsername);
+            const nameEl = document.getElementById('artist-name');
+            if (nameEl) nameEl.textContent = currentUsername;
+          }
+        } catch (e) {
+          console.error('Error reading user from Firestore:', e);
+        }
+        // After we know currentUserId, refresh Firestore-rendered songs to filter by user_id
+        renderSongsFromFirestore();
+      } else {
+        // Not logged in: keep fallback name and render local songs
+        const nameEl = document.getElementById('artist-name');
+        if (nameEl) nameEl.textContent = currentUsername;
+      }
+    });
+  </script>
   <aside class="sidebar" id="sidebar">
     <div class="logo">Boomplay</div>
     <nav>
       <ul>
         <li><a href="artist-dashboard.html" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
-        <li><a href="upload.html"><i data-lucide="upload"></i> Upload Music</a></li>
+        <!-- <li><a href="upload.html"><i data-lucide="upload"></i> Upload Music</a></li> -->
         <li><a href="profile.html"><i data-lucide="user"></i> Profile</a></li>
         <li><a href="login.html"><i data-lucide="log-out"></i> Logout</a></li>
       </ul>
@@ -113,6 +176,7 @@
   <p>Here you can upload new songs, view your uploaded tracks, and manage your profile.</p>
   <section class="upload-section">
     <h3><i data-lucide="upload-cloud"></i> Upload New Song</h3>
+    <div id="uploadError" style="color:#ff4d4d;display:none;margin-bottom:10px;"></div>
     <form id="uploadForm" enctype="multipart/form-data">
       <input type="text" id="songTitle" placeholder="Song Title" required>
       <input type="text" id="songArtist" placeholder="Artist Name" required>
@@ -125,94 +189,151 @@
       <input type="file" id="coverPhoto" accept="image/*" required>
       <button type="submit">Upload</button>
     </form>
+    <div id="loginPrompt" style="color:#ffd700;display:none;margin-top:10px;">Please <a href="login.html" style="color:#ffd700;text-decoration:underline;">log in</a> to upload songs.</div>
   </section>
-  <section>
-    <h3 style="color: #ffd700; display: flex; align-items: center; gap: 12px;"><i data-lucide="disc"></i> Your Uploaded Songs</h3>
-    <ul id="uploadedSongs" class="uploaded-songs-list"></ul>
+  <ul id="uploadedSongs" class="uploaded-songs-list"></ul>
   </section>
-</main>
-  </div>
-  <footer class="player">
-    <div class="player-controls">
-      <button><i data-lucide="skip-back"></i></button>
-      <button id="playBtn"><i data-lucide="play"></i></button>
-      <button><i data-lucide="skip-forward"></i></button>
-      <span class="song-info">Now Playing: Song Title - Artist</span>
-      <input type="range" min="0" max="100" value="0" class="progress-bar"/>
-      <button><i data-lucide="volume-2"></i></button>
-    </div>
-    <audio id="audio-player" src="" preload="auto"></audio>
-  </footer>
   <script>
-    lucide.createIcons();
-
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-
-    menuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('mobile-visible');
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-        sidebar.classList.remove('mobile-visible');
-      }
-    });
-  </script>
-  <script>
-    // Show artist name from localStorage
-    document.getElementById('artist-name').textContent = localStorage.getItem('boomplay_username') || 'Artist';
-
-    // Handle song upload (demo, stores in localStorage)
+    // Handle song upload (Cloudinary only)
     const uploadForm = document.getElementById('uploadForm');
     const uploadedSongs = document.getElementById('uploadedSongs');
-    let songs = JSON.parse(localStorage.getItem('artist_songs') || '[]');
-    function renderSongs() {
-      uploadedSongs.innerHTML = '';
-      songs.forEach((song, idx) => {
-        const li = document.createElement('li');
-        li.innerHTML = `${song.title} - ${song.artist} <button class="remove-upload" data-idx="${idx}" title="Remove">&times;</button>`;
-        uploadedSongs.appendChild(li);
-      });
-      // Remove song handler
-      document.querySelectorAll('.remove-upload').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const idx = this.getAttribute('data-idx');
-          songs.splice(idx, 1);
-          localStorage.setItem('artist_songs', JSON.stringify(songs));
-          renderSongs();
-        });
-      });
+    const uploadError = document.getElementById('uploadError');
+    const loginPrompt = document.getElementById('loginPrompt');
+    const currentArtist = localStorage.getItem('boomplay_username') || 'Artist';
+
+    // Cloudinary config
+    const cloudName = 'dzqmuzv0x'; // Your Cloudinary cloud name
+    const uploadPreset = 'Music Web App'; // Your unsigned upload preset name
+    // Show debug info
+const debugInfo = document.getElementById('debugInfo');
+if (debugInfo) {
+  debugInfo.style.display = 'block';
+  debugInfo.innerHTML = `<b>Debug:</b><br>
+    Firebase user: <pre>${JSON.stringify(user, null, 2)}</pre><br>
+    currentUserId: <b>${user ? user.uid : 'null'}</b><br>
+    Auth error? Check browser console.`;
+}
+    // Helper: upload file to Cloudinary
+    async function uploadToCloudinary(file, resourceType = 'auto') {
+      const url = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', uploadPreset);
+      const res = await fetch(url, { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.secure_url) return data.secure_url;
+      throw new Error(data.error && data.error.message ? data.error.message : 'Cloudinary upload failed');
     }
-    renderSongs();
-    uploadForm.addEventListener('submit', function(e) {
+
+    // Fetch and render songs uploaded by this artist (from Firestore)
+    async function renderSongsFromFirestore() {
+      uploadedSongs.innerHTML = '';
+      let query = firestore.collection('songs').orderBy('created_at', 'desc');
+      if (currentUserId) {
+        query = query.where('user_id', '==', currentUserId);
+      } else {
+        query = query.where('artist', '==', currentArtist);
+      }
+      const snapshot = await query.get();
+      if (!snapshot.empty) {
+        snapshot.forEach(doc => {
+          const song = doc.data();
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span>${song.title} - ${song.artist}</span>
+              ${song.music_file_url ? `<audio controls style='height:28px;'><source src='${song.music_file_url}' type='audio/mpeg'>Your browser does not support the audio element.</audio>` : ''}
+            </div>
+          `;
+          uploadedSongs.appendChild(li);
+        });
+      } else {
+        uploadedSongs.innerHTML = '<li>No songs uploaded yet.</li>';
+      }
+    }
+
+    // Disable upload form and show login prompt if not logged in
+    function updateLoginUI() {
+      if (currentUserId) {
+        uploadForm.style.display = 'block';
+        loginPrompt.style.display = 'none';
+        console.log('Upload form shown: user is logged in.', currentUserId);
+      } else {
+        uploadForm.style.display = 'none';
+        loginPrompt.style.display = 'block';
+        console.log('Upload form hidden: no user logged in.', currentUserId);
+      }
+    }
+
+    uploadForm.addEventListener('submit', async function(e) {
       e.preventDefault();
+      uploadError.style.display = 'none';
+      uploadError.textContent = '';
+      if (!currentUserId) {
+        uploadError.textContent = 'Please log in to upload songs.';
+        uploadError.style.display = 'block';
+        return;
+      }
       const title = document.getElementById('songTitle').value;
       const artist = document.getElementById('songArtist').value;
-      songs.push({ title, artist });
-      localStorage.setItem('artist_songs', JSON.stringify(songs));
-      renderSongs();
-      uploadForm.reset();
+      const featuredArtist = document.getElementById('featuredArtist').value;
+      const genre = document.getElementById('genre').value;
+      const releaseDate = document.getElementById('releaseDate').value;
+      const coverPhotoInput = document.getElementById('coverPhoto');
+      const musicFileInput = document.getElementById('musicFile');
+
+      // Upload cover photo to Cloudinary
+      let coverPhotoUrl = '';
+      if (coverPhotoInput.files && coverPhotoInput.files[0]) {
+        try {
+          coverPhotoUrl = await uploadToCloudinary(coverPhotoInput.files[0], 'image');
+        } catch (err) {
+          uploadError.textContent = 'Cover upload error: ' + err.message;
+          uploadError.style.display = 'block';
+          return;
+        }
+      }
+
+      // Upload music file to Cloudinary
+      let musicFileUrl = '';
+      if (musicFileInput.files && musicFileInput.files[0]) {
+        try {
+          musicFileUrl = await uploadToCloudinary(musicFileInput.files[0], 'video'); // Cloudinary treats audio as video
+        } catch (err) {
+          uploadError.textContent = 'Music upload error: ' + err.message;
+          uploadError.style.display = 'block';
+          return;
+        }
+      }
+
+      // Save song info to Firestore
+      try {
+        await firestore.collection('songs').add({
+          title,
+          artist,
+          featured_artist: featuredArtist,
+          genre,
+          release_date: releaseDate,
+          cover_photo_url: coverPhotoUrl,
+          music_file_url: musicFileUrl,
+          user_id: currentUserId,
+          created_at: new Date()
+        });
+        renderSongsFromFirestore();
+        uploadForm.reset();
+        alert('Song uploaded successfully!');
+      } catch (err) {
+        uploadError.textContent = 'Error uploading song: ' + err.message;
+        uploadError.style.display = 'block';
+      }
     });
- const reader = new FileReader();
-    reader.onload = function(event) {
-      const coverPhoto = event.target.result;
-      // For demo, we won't store the actual music file
-      songs.push({ title, artist, featuredArtist, genre, releaseDate, coverPhoto });
-      localStorage.setItem('artist_songs', JSON.stringify(songs));
-      renderSongs();
-      uploadForm.reset();
-    };
-    if (coverPhotoInput.files[0]) {
-      reader.readAsDataURL(coverPhotoInput.files[0]);
-    } else {
-      // fallback if no cover photo
-      songs.push({ title, artist, featuredArtist, genre, releaseDate, coverPhoto: '' });
-      localStorage.setItem('artist_songs', JSON.stringify(songs));
-      renderSongs();
-      uploadForm.reset();
-    }
-  
+
+    // Initial render and checks
+    (async function() {
+      updateLoginUI();
+      renderSongsFromFirestore();
+    })();
+    // ...existing code...
 
   </script>
 </body>

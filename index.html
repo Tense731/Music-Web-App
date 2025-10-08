@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const supabaseUrl = 'https://cfpxfhboqgxclomfupas.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcHhmaGJvcWd4Y2xvbWZ1cGFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4Nzc1NjcsImV4cCI6MjA3NTQ1MzU2N30.3AcF36xzKmeSD0Y0gxIl9vezICnUSYTHRQvfMlgHjYQ';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+  </script>
+  <!-- Using Supabase on the home page; Firebase not required here -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Boomplay Clone - Home</title>
@@ -8,6 +16,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
+  <!-- Sidebar Menu -->
   <aside class="sidebar" id="sidebar">
     <div class="logo">Boomplay</div>
     <nav>
@@ -24,11 +33,15 @@
       </ul>
     </nav>
   </aside>
+
+  <!-- Main Section -->
   <div class="main-section">
     <header class="topbar">
-      <button class="menu-toggle" id="menuToggle">
+      <!-- Toggle Button -->
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
         <i data-lucide="menu"></i>
       </button>
+
       <div class="search-container">
         <i data-lucide="search" class="search-icon"></i>
         <input class="search" type="text" placeholder="Search music, artists, albums..." />
@@ -38,26 +51,18 @@
         <a href="login.html" class="login-btn ripple">Login</a>
       </div>
     </header>
+
     <main class="main-content">
       <section class="banner">
         <h2>Featured Music</h2>
         <div class="banner-img"></div>
       </section>
+
       <section class="trending">
-        <h2><i data-lucide="flame"></i> Trending Songs</h2>
-        <div class="song-list">
-          <div class="song-card">
-            <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=80&q=80" class="song-img" alt="Calm Down">
-            <div class="song-title">Calm Down</div>
-            <div class="song-artist">Rema</div>
-          </div>
-          <div class="song-card">
-            <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=80&q=80" class="song-img" alt="Essence">
-            <div class="song-title">Essence</div>
-            <div class="song-artist">Wizkid</div>
-          </div>
-        </div>
+  <h2><i data-lucide="flame"></i> Trending Songs</h2>
+  <div class="song-list" id="trendingSongs"></div>
       </section>
+
       <section class="playlists">
         <h2><i data-lucide="music"></i> Recommended Playlists</h2>
         <div class="playlist-list">
@@ -73,6 +78,8 @@
       </section>
     </main>
   </div>
+
+  <!-- Footer Player -->
   <footer class="player">
     <div class="player-controls">
       <button><i data-lucide="skip-back"></i></button>
@@ -84,22 +91,57 @@
     </div>
     <audio id="audio-player" src="" preload="auto"></audio>
   </footer>
-  <script>
-    lucide.createIcons();
 
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
+  <!-- Scripts -->
+  
+<script>
 
-    menuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('mobile-visible');
+// Fetch and display all uploaded songs from Supabase
+document.addEventListener('DOMContentLoaded', async function() {
+  const trendingSongs = document.getElementById('trendingSongs');
+  const { data, error } = await supabase
+    .from('songs')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  trendingSongs.innerHTML = '';
+  if (data && data.length > 0) {
+    data.forEach(song => {
+      const card = document.createElement('div');
+      card.className = 'song-card';
+      card.innerHTML = `
+        <img src="${song.cover_photo_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=80&q=80'}" class="song-img" alt="${song.title}">
+        <div class="song-title">${song.title}</div>
+        <div class="song-artist">${song.artist}</div>
+        ${song.music_file_url ? `<audio controls style="width:100%;margin-top:8px;"><source src="${song.music_file_url}" type="audio/mpeg">Your browser does not support the audio element.</audio>` : ''}
+      `;
+      trendingSongs.appendChild(card);
     });
+  } else {
+    trendingSongs.innerHTML = '<div style="color:#ffd700">No songs uploaded yet.</div>';
+  }
+});
+  // initialize icons
+  lucide.createIcons();
 
-    document.addEventListener('click', (e) => {
-      if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-        sidebar.classList.remove('mobile-visible');
-      }
-    });
-  </script>
+  const menuToggle = document.getElementById("menuToggle");
+  const sidebar = document.getElementById("sidebar");
+
+  // Toggle sidebar when clicking hamburger
+  menuToggle.addEventListener("click", (e) => {
+    e.stopPropagation(); // prevent closing immediately
+    sidebar.classList.toggle("mobile-visible");
+  });
+
+  // Close sidebar when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+      sidebar.classList.remove("mobile-visible");
+    }
+  });
+</script>
+
   <script src="main.js"></script>
 </body>
 </html>

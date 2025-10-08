@@ -6,6 +6,26 @@
   <title>Sign Up - Boomplay Clone</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Firebase scripts: load before any custom script that uses auth/db -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script>
+    // Initialize Firebase only once, before any usage
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJYntIHuHfLtlpdYXhwbamPFN9X6ADUhU",
+      authDomain: "music-web-app-ecc1e.firebaseapp.com",
+      projectId: "music-web-app-ecc1e",
+      storageBucket: "music-web-app-ecc1e.appspot.com",
+      messagingSenderId: "214514858457",
+      appId: "1:214514858457:web:7c2170f724a33accd241c8",
+    };
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    var auth = firebase.auth();
+    var db = firebase.firestore();
+  </script>
   <style>
     .signup-container {
       max-width: 420px;
@@ -107,6 +127,7 @@
       <input type="text" id="username" name="username" required />
       <label for="email"><i data-lucide="mail"></i> Email:</label>
       <input type="email" id="email" name="email" required />
+  <!-- Profile picture removed as requested -->
       <label for="password"><i data-lucide="lock"></i> Password:</label>
       <input type="password" id="password" name="password" required />
       <button type="submit">Sign Up</button>
@@ -116,15 +137,40 @@
  <script>
   lucide.createIcons();
 </script>
- <script>
-  document.getElementById('signupForm').addEventListener('submit', function(e) {
+<script>
+  document.getElementById('signupForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const role = document.getElementById('role').value;
     const username = document.getElementById('username').value;
-    localStorage.setItem('boomplay_role', role);
-    localStorage.setItem('boomplay_username', username);
-    alert('Signed up as ' + role + ': ' + username + ' (demo only)');
-    window.location.href = 'login.html';
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    if (!auth || !db) {
+      alert('Firebase is not initialized. Please check your configuration.');
+      return;
+    }
+
+    try {
+      // 1. Create user in Firebase Auth
+      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+
+      // 2. Save user info in Firestore (no profilePicURL)
+      await db.collection('users').doc(user.uid).set({
+        role,
+        username,
+        email
+      });
+
+      // 3. Redirect based on role
+      if (role === 'artist') {
+        window.location.href = 'Artist Dashboard.html';
+      } else {
+        window.location.href = 'Customer Dashboard.html';
+      }
+    } catch (error) {
+      alert(error.message);
+    }
   });
 </script>
 </body>
