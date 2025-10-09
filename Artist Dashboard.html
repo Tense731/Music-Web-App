@@ -59,26 +59,37 @@
     .uploaded-songs-list li {
       background: #222;
       color: #ffd700;
-      padding: 10px 16px;
-      border-radius: 8px;
-      margin-bottom: 8px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 14px;
       font-weight: 500;
-      box-shadow: 0 1px 4px #ffd70022;
+      box-shadow: 0 2px 8px #ffd70033;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
+      transition: box-shadow 0.2s, background 0.2s;
+    }
+    .uploaded-songs-list li:hover {
+      box-shadow: 0 4px 16px #ffd70066;
+      background: #181818;
     }
     .remove-upload {
-      background: none;
-      border: none;
-      color: #ffd700;
-      font-size: 1.1em;
-      cursor: pointer;
-      margin-left: 10px;
-      transition: color 0.2s;
+  background: #ff4d4d;
+  border: none;
+  color: #fff;
+  font-size: 1em;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-left: 0;
+  padding: 6px 18px;
+  border-radius: 8px;
+  font-weight: bold;
+  box-shadow: 0 1px 4px #ff4d4d33;
+  transition: background 0.2s, color 0.2s;
     }
     .remove-upload:hover {
-      color: #ff4d4d;
+  background: #ffd700;
+  color: #181818;
     }
     @media (max-width: 700px) {
       .upload-section, .uploaded-songs-list {
@@ -89,6 +100,10 @@
         margin-right: 0;
         margin-bottom: 10px;
       }
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -121,17 +136,27 @@
       console.log('Auth state changed (hybrid):', user);
       // Show debug info
       const debugInfo = document.getElementById('debugInfo');
+      let possibleUid = user && (user.uid || (user._delegate && user._delegate.uid) || (user.multiFactor && user.multiFactor.user && user.multiFactor.user.uid));
+      currentUserId = possibleUid;
       if (debugInfo) {
         debugInfo.style.display = 'block';
         debugInfo.innerHTML = `<b>Debug:</b><br>
           Firebase user: <pre>${JSON.stringify(user, null, 2)}</pre><br>
-          currentUserId: <b>${user ? user.uid : 'null'}</b><br>
+          user.uid: <b>${user && user.uid}</b><br>
+          user._delegate.uid: <b>${user && user._delegate && user._delegate.uid}</b><br>
+          user.multiFactor.user.uid: <b>${user && user.multiFactor && user.multiFactor.user && user.multiFactor.user.uid}</b><br>
+          currentUserId: <b>${currentUserId}</b><br>
           Auth error? Check browser console.`;
       }
+      console.log('Auth state user object:', user);
+      console.log('user.uid:', user && user.uid);
+      console.log('user._delegate.uid:', user && user._delegate && user._delegate.uid);
+      console.log('user.multiFactor.user.uid:', user && user.multiFactor && user.multiFactor.user && user.multiFactor.user.uid);
+      console.log('currentUserId:', currentUserId);
       if (user) {
-        currentUserId = user.uid;
+        updateLoginUI();
         try {
-          const doc = await firestore.collection('users').doc(user.uid).get();
+          const doc = await firestore.collection('users').doc(currentUserId).get();
           if (doc.exists) {
             currentUsername = doc.data().username || currentUsername;
             localStorage.setItem('boomplay_username', currentUsername);
@@ -144,6 +169,7 @@
         // After we know currentUserId, refresh Firestore-rendered songs to filter by user_id
         renderSongsFromFirestore();
       } else {
+        updateLoginUI();
         // Not logged in: keep fallback name and render local songs
         const nameEl = document.getElementById('artist-name');
         if (nameEl) nameEl.textContent = currentUsername;
@@ -154,9 +180,9 @@
     <div class="logo">Boomplay</div>
     <nav>
       <ul>
-        <li><a href="artist-dashboard.html" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+        <li><a href="Artist Dashboard.html" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
         <!-- <li><a href="upload.html"><i data-lucide="upload"></i> Upload Music</a></li> -->
-        <li><a href="profile.html"><i data-lucide="user"></i> Profile</a></li>
+        <li><a href="ArtistProfile.html"><i data-lucide="user"></i> Profile</a></li>
         <li><a href="login.html"><i data-lucide="log-out"></i> Logout</a></li>
       </ul>
     </nav>
@@ -177,6 +203,7 @@
   <section class="upload-section">
     <h3><i data-lucide="upload-cloud"></i> Upload New Song</h3>
     <div id="uploadError" style="color:#ff4d4d;display:none;margin-bottom:10px;"></div>
+    <div id="uploadLoading" style="display:none;margin-bottom:10px;color:#ffd700;font-weight:bold;"><span class="spinner" style="display:inline-block;width:22px;height:22px;border:3px solid #ffd700;border-top:3px solid #222;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px;"></span>Uploading, please wait...</div>
     <form id="uploadForm" enctype="multipart/form-data">
       <input type="text" id="songTitle" placeholder="Song Title" required>
       <input type="text" id="songArtist" placeholder="Artist Name" required>
@@ -199,20 +226,12 @@
     const uploadedSongs = document.getElementById('uploadedSongs');
     const uploadError = document.getElementById('uploadError');
     const loginPrompt = document.getElementById('loginPrompt');
+    const uploadLoading = document.getElementById('uploadLoading');
     const currentArtist = localStorage.getItem('boomplay_username') || 'Artist';
 
     // Cloudinary config
     const cloudName = 'dzqmuzv0x'; // Your Cloudinary cloud name
     const uploadPreset = 'Music Web App'; // Your unsigned upload preset name
-    // Show debug info
-const debugInfo = document.getElementById('debugInfo');
-if (debugInfo) {
-  debugInfo.style.display = 'block';
-  debugInfo.innerHTML = `<b>Debug:</b><br>
-    Firebase user: <pre>${JSON.stringify(user, null, 2)}</pre><br>
-    currentUserId: <b>${user ? user.uid : 'null'}</b><br>
-    Auth error? Check browser console.`;
-}
     // Helper: upload file to Cloudinary
     async function uploadToCloudinary(file, resourceType = 'auto') {
       const url = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
@@ -240,12 +259,44 @@ if (debugInfo) {
           const song = doc.data();
           const li = document.createElement('li');
           li.innerHTML = `
-            <div style="display:flex;align-items:center;gap:10px;">
-              <span>${song.title} - ${song.artist}</span>
-              ${song.music_file_url ? `<audio controls style='height:28px;'><source src='${song.music_file_url}' type='audio/mpeg'>Your browser does not support the audio element.</audio>` : ''}
+            <div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;width:100%;">
+              <div><b>Title:</b> ${song.title}</div>
+              <div><b>Artist:</b> ${song.artist}</div>
+              <div><b>Featured Artist:</b> ${song.featured_artist || '-'}</div>
+              <div><b>Genre:</b> ${song.genre}</div>
+              <div><b>Release Date:</b> ${song.release_date}</div>
+              <div><b>Cover:</b> ${song.cover_photo_url ? `<img src='${song.cover_photo_url}' alt='cover' style='height:48px;border-radius:6px;'>` : '-'}</div>
+              <div><b>Music:</b> ${song.music_file_url ? `<audio controls style='height:28px;'><source src='${song.music_file_url}' type='audio/mpeg'>Your browser does not support the audio element.</audio>` : '-'}</div>
+              <div><b>Uploaded:</b> ${song.created_at && song.created_at.toDate ? song.created_at.toDate().toLocaleString() : song.created_at}</div>
+              <button class="remove-upload" data-id="${doc.id}" title="Delete Song"><i data-lucide="trash-2"></i> Delete</button>
+              <span class="delete-status" style="color:#ff4d4d;font-size:0.95em;margin-top:4px;display:none;"></span>
             </div>
           `;
           uploadedSongs.appendChild(li);
+        });
+        // Add delete handler with loading and feedback
+        Array.from(document.getElementsByClassName('remove-upload')).forEach(btn => {
+          btn.addEventListener('click', async function(e) {
+            const songId = btn.getAttribute('data-id');
+            const statusSpan = btn.parentElement.querySelector('.delete-status');
+            if (confirm('Are you sure you want to delete this song?')) {
+              btn.disabled = true;
+              btn.textContent = 'Deleting...';
+              statusSpan.style.display = 'inline';
+              statusSpan.textContent = '';
+              try {
+                await firestore.collection('songs').doc(songId).delete();
+                statusSpan.textContent = 'Deleted!';
+                setTimeout(() => {
+                  renderSongsFromFirestore();
+                }, 700);
+              } catch (err) {
+                statusSpan.textContent = 'Error: ' + err.message;
+                btn.disabled = false;
+                btn.textContent = 'Delete';
+              }
+            }
+          });
         });
       } else {
         uploadedSongs.innerHTML = '<li>No songs uploaded yet.</li>';
@@ -254,6 +305,10 @@ if (debugInfo) {
 
     // Disable upload form and show login prompt if not logged in
     function updateLoginUI() {
+      const debugInfo = document.getElementById('debugInfo');
+      if (debugInfo) {
+        debugInfo.innerHTML += `<br><b>updateLoginUI:</b> currentUserId = <b>${currentUserId}</b>`;
+      }
       if (currentUserId) {
         uploadForm.style.display = 'block';
         loginPrompt.style.display = 'none';
@@ -269,7 +324,13 @@ if (debugInfo) {
       e.preventDefault();
       uploadError.style.display = 'none';
       uploadError.textContent = '';
+      const uploadLoading = document.getElementById('uploadLoading');
+      uploadLoading.style.display = 'block';
+      const submitBtn = uploadForm.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
       if (!currentUserId) {
+        uploadLoading.style.display = 'none';
+        submitBtn.disabled = false;
         uploadError.textContent = 'Please log in to upload songs.';
         uploadError.style.display = 'block';
         return;
@@ -288,6 +349,8 @@ if (debugInfo) {
         try {
           coverPhotoUrl = await uploadToCloudinary(coverPhotoInput.files[0], 'image');
         } catch (err) {
+          uploadLoading.style.display = 'none';
+          submitBtn.disabled = false;
           uploadError.textContent = 'Cover upload error: ' + err.message;
           uploadError.style.display = 'block';
           return;
@@ -300,6 +363,8 @@ if (debugInfo) {
         try {
           musicFileUrl = await uploadToCloudinary(musicFileInput.files[0], 'video'); // Cloudinary treats audio as video
         } catch (err) {
+          uploadLoading.style.display = 'none';
+          submitBtn.disabled = false;
           uploadError.textContent = 'Music upload error: ' + err.message;
           uploadError.style.display = 'block';
           return;
@@ -326,11 +391,12 @@ if (debugInfo) {
         uploadError.textContent = 'Error uploading song: ' + err.message;
         uploadError.style.display = 'block';
       }
+      uploadLoading.style.display = 'none';
+      submitBtn.disabled = false;
     });
 
     // Initial render and checks
     (async function() {
-      updateLoginUI();
       renderSongsFromFirestore();
     })();
     // ...existing code...

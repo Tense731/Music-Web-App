@@ -51,20 +51,45 @@
       color: #fff8;
       margin-bottom: 8px;
     }
-    .fav-btn {
-      background: #ffd700;
-      color: #181818;
-      border: none;
-      border-radius: 16px;
-      padding: 6px 16px;
+    .fav-btn, .cart-btn {
+      padding: 8px 22px;
+      border-radius: 10px;
       font-weight: bold;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: background 0.2s, color 0.2s;
+      font-size: 1em;
+      border: none;
+      margin: 0 2px;
+      box-shadow: 0 1px 6px #ffd70033;
+      transition: background 0.2s, color 0.2s, transform 0.15s;
+    }
+    .fav-btn {
+      background: linear-gradient(90deg, #ffd700 80%, #fff7b3 100%);
+      color: #181818;
+      transition: background 0.2s, color 0.2s, transform 0.15s;
     }
     .fav-btn:hover {
-      background: #fff;
+      background: linear-gradient(90deg, #fff7b3 80%, #ffd700 100%);
       color: #ffd700;
+      transform: scale(1.07);
+      box-shadow: 0 2px 12px #ffd70066;
+    }
+    .cart-btn {
+      background: linear-gradient(90deg, #222 80%, #ffd700 100%);
+      color: #ffd700;
+      border: 2px solid #ffd70044;
+      transition: background 0.2s, color 0.2s, transform 0.15s;
+    }
+    .cart-btn:hover {
+      background: linear-gradient(90deg, #ffd700 80%, #222 100%);
+      color: #181818;
+      transform: scale(1.07);
+      box-shadow: 0 2px 12px #ffd70066;
+    }
+    .fav-btn:disabled, .cart-btn:disabled {
+      background: #ccc;
+      color: #888;
+      cursor: not-allowed;
+      opacity: 0.7;
+      box-shadow: none;
     }
     #favoriteSongs {
       margin-top: 16px;
@@ -134,10 +159,8 @@
     <div class="logo">Boomplay</div>
     <nav>
       <ul>
-        <li><a href="customer-dashboard.html" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
-        <li><a href="library.html"><i data-lucide="library"></i> Library</a></li>
-        <li><a href="playlists.html"><i data-lucide="list-music"></i> Playlists</a></li>
-        <li><a href="profile.html"><i data-lucide="user"></i> Profile</a></li>
+        <li><a href="Customer Dashboard.html" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+        <li><a href="CustomerProfile.html"><i data-lucide="user"></i> Profile</a></li>
         <li><a href="login.html"><i data-lucide="log-out"></i> Logout</a></li>
       </ul>
     </nav>
@@ -148,42 +171,53 @@
         <i data-lucide="menu"></i>
       </button>
       <span>Welcome, <span id="customer-name"></span>!</span>
-      <div class="user-menu">
-        <button class="user-menu-button"><i data-lucide="user-circle"></i> Customer</button>
+      <div style="display: flex; align-items: center; gap: 18px;">
+        <button id="cartIconBtn" title="View Cart" style="background: none; border: none; cursor: pointer; position: relative;">
+          <i data-lucide="shopping-cart" style="width: 28px; height: 28px; color: #ffd700;"></i>
+          <span id="cart-count-badge" style="position: absolute; top: -6px; right: -6px; background: #ff4d4d; color: #fff; font-size: 0.85em; border-radius: 50%; padding: 2px 7px; min-width: 18px; text-align: center; display: none;">0</span>
+        </button>
+        <div class="user-menu">
+          <button class="user-menu-button"><i data-lucide="user-circle"></i> Customer</button>
+        </div>
       </div>
+  <script>
+    // Cart icon badge update logic
+    function updateCartCount() {
+      const user = auth.currentUser;
+      const badge = document.getElementById('cart-count-badge');
+      if (!user) {
+        badge.style.display = 'none';
+        return;
+      }
+      db.collection('carts').doc(user.uid).collection('items').get().then(snapshot => {
+        const count = snapshot.size;
+        if (count > 0) {
+          badge.textContent = count;
+          badge.style.display = 'inline-block';
+        } else {
+          badge.style.display = 'none';
+        }
+      });
+    }
+    auth.onAuthStateChanged(function(user) {
+      if (user) updateCartCount();
+    });
+    // Optionally, update cart count after adding to cart
+    document.addEventListener('cart-updated', updateCartCount);
+    // Cart icon click handler (placeholder for future cart page/modal)
+    document.getElementById('cartIconBtn').addEventListener('click', function() {
+      alert('Cart feature coming soon!');
+      // In future: window.location.href = 'cart.html';
+    });
+  </script>
     </header>
     <main class="main-content">
       <h2>Customer Dashboard</h2>
       <p>Browse your library, discover new music, and manage your playlists.</p>
       <section>
-        <h3 style="color: #ffd700; display: flex; align-items: center; gap: 12px;"><i data-lucide="sparkles"></i> Recommended Songs</h3>
-        <div class="song-list">
-          <div class="song-card" data-title="Calm Down" data-artist="Rema">
-            <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=80&q=80" class="song-img" alt="Calm Down">
-            <div class="song-title">Calm Down</div>
-            <div class="song-artist">Rema</div>
-            <button class="fav-btn"><i data-lucide="heart"></i> Add to Favorites</button>
-          </div>
-          <div class="song-card" data-title="Essence" data-artist="Wizkid">
-            <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=80&q=80" class="song-img" alt="Essence">
-            <div class="song-title">Essence</div>
-            <div class="song-artist">Wizkid</div>
-            <button class="fav-btn"><i data-lucide="heart"></i> Add to Favorites</button>
-          </div>
-          <div class="song-card" data-title="Love Nwantiti" data-artist="CKay">
-            <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=80&q=80" class="song-img" alt="Love Nwantiti">
-            <div class="song-title">Love Nwantiti</div>
-            <div class="song-artist">CKay</div>
-            <button class="fav-btn"><i data-lucide="heart"></i> Add to Favorites</button>
-          </div>
-          <div class="song-card" data-title="Peru" data-artist="Fireboy DML">
-            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=80&q=80" class="song-img" alt="Peru">
-            <div class="song-title">Peru</div>
-            <div class="song-artist">Fireboy DML</div>
-            <button class="fav-btn"><i data-lucide="heart"></i> Add to Favorites</button>
-          </div>
-        </div>
-        <h3 style="color: #ffd700; display: flex; align-items: center; gap: 12px; margin-top: 48px;"><i data-lucide="heart"></i> Your Favorites</h3>
+        <h3 style="color: #ffd700; display: flex; align-items: center; gap: 12px;"><i data-lucide="sparkles"></i> All Songs</h3>
+        <div class="song-list" id="customerSongs"></div>
+        <!-- <h3 style="color: #ffd700; display: flex; align-items: center; gap: 12px; margin-top: 48px;"><i data-lucide="heart"></i> Your Favorites</h3> -->
         <ul id="favoriteSongs"></ul>
       </section>
     </main>
@@ -252,7 +286,18 @@
       favoriteSongs.innerHTML = '';
       favorites.forEach((song, idx) => {
         const li = document.createElement('li');
-        li.innerHTML = `${song.title} - ${song.artist} <button class="remove-fav" data-idx="${idx}" title="Remove">&times;</button>`;
+        li.innerHTML = `
+          <div style="display:flex;align-items:center;gap:10px;width:100%">
+            <img src="${song.cover_photo_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=40&q=80'}" style="height:32px;width:32px;border-radius:6px;vertical-align:middle;">
+            <div style="flex:1;">
+              <b>${song.title}</b> - ${song.artist}
+              <span style="margin-left:8px;color:#fff7b3;">${song.genre ? song.genre : ''}</span>
+              <span style="margin-left:8px;color:#fff7b3;">${song.release_date ? song.release_date : ''}</span>
+              <span style="margin-left:8px;color:#fff7b3;">${song.featured_artist ? song.featured_artist : ''}</span>
+            </div>
+            <button class="remove-fav" data-idx="${idx}" title="Remove">&times;</button>
+          </div>
+        `;
         favoriteSongs.appendChild(li);
       });
       // Remove favorite handler
@@ -278,6 +323,87 @@
           renderFavorites();
         }
       });
+    });
+
+    // Fetch and display all songs for the customer
+    async function fetchCustomerSongs() {
+      const customerSongsDiv = document.getElementById('customerSongs');
+      customerSongsDiv.innerHTML = '<p>Loading songs...</p>';
+      try {
+        const snapshot = await db.collection('songs').get();
+        customerSongsDiv.innerHTML = ''; // Clear loading text
+        snapshot.forEach(async doc => {
+          const song = doc.data();
+          const card = document.createElement('div');
+          card.className = 'song-card';
+          card.setAttribute('data-title', song.title);
+          card.setAttribute('data-artist', song.artist);
+          card.innerHTML = `
+            <img src="${song.cover_photo_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=80&q=80'}" class="song-img" alt="${song.title}">
+            <div class="song-title">${song.title}</div>
+            <div class="song-artist">${song.artist}</div>
+            <div class="song-meta">${song.genre ? `<b>Genre:</b> ${song.genre}` : ''}</div>
+            <div class="song-meta">${song.release_date ? `<b>Release:</b> ${song.release_date}` : ''}</div>
+            <div class="song-meta">${song.featured_artist ? `<b>Feat:</b> ${song.featured_artist}` : ''}</div>
+            ${song.music_file_url ? `<audio controls class="song-audio"><source src="${song.music_file_url}" type="audio/mpeg">Your browser does not support the audio element.</audio>` : ''}
+            <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;">
+              <button class="cart-btn" style="padding:6px 16px;border-radius:8px;background:#ffd700;color:#222;font-weight:bold;cursor:pointer;border:none;transition:background 0.2s;">Add to Cart</button>
+            </div>
+          `;
+          customerSongsDiv.appendChild(card);
+          // Add to cart handler
+          const cartBtn = card.querySelector('.cart-btn');
+          // Check if already in cart and disable if so
+          let userId = null;
+          try {
+            if (auth.currentUser) {
+              userId = auth.currentUser.uid;
+            }
+          } catch (e) {}
+          if (userId) {
+            try {
+              const cartDoc = await db.collection('carts').doc(userId).collection('items').doc(doc.id).get();
+              if (cartDoc.exists) {
+                cartBtn.textContent = 'Added!';
+                cartBtn.disabled = true;
+              }
+            } catch (e) {}
+          }
+          cartBtn.addEventListener('click', async function() {
+            let userId = null;
+            try {
+              if (auth.currentUser) {
+                userId = auth.currentUser.uid;
+              }
+            } catch (e) {}
+            if (!userId) {
+              alert('Please log in to add songs to your cart.');
+              window.location.href = 'login.html';
+              return;
+            }
+            try {
+              await db.collection('carts').doc(userId).collection('items').doc(doc.id).set({
+                songId: doc.id,
+                ...song,
+                added_at: new Date()
+              });
+              cartBtn.textContent = 'Added!';
+              cartBtn.disabled = true;
+              // Dispatch event to update cart count badge
+              document.dispatchEvent(new Event('cart-updated'));
+            } catch (err) {
+              alert('Error adding to cart: ' + err.message);
+            }
+          });
+        });
+      } catch (e) {
+        customerSongsDiv.innerHTML = '<p class="error">Error loading songs: ' + e.message + '</p>';
+        console.error('Error loading songs from Firestore:', e);
+      }
+    }
+    // Only run fetchCustomerSongs on DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function() {
+      fetchCustomerSongs();
     });
   </script>
 </body>

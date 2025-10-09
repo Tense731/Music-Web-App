@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Artist Profile - Boomplay Clone</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <style>
+    .profile-section { background: #222; padding: 32px; border-radius: 16px; max-width: 500px; margin: 32px auto; color: #ffd700; box-shadow: 0 2px 12px #ffd70022; }
+    .profile-section h2 { color: #ffd700; margin-bottom: 18px; }
+    .profile-info { margin-bottom: 18px; }
+    .profile-label { color: #fff7b3; font-weight: bold; margin-right: 8px; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">Boomplay</div>
+    <nav>
+      <ul>
+        <li><a href="Artist Dashboard.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+        <li><a href="ArtistProfile.html" class="active"><i data-lucide="user"></i> Profile</a></li>
+        <li><a href="login.html"><i data-lucide="log-out"></i> Logout</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <div class="main-section">
+    <header class="topbar">
+      <span>Artist Profile</span>
+    </header>
+    <main class="main-content">
+      <section class="profile-section">
+        <h2>Artist Profile</h2>
+        <div id="profileInfo" class="profile-info">
+          <form id="artistProfileForm" style="display:flex;flex-direction:column;gap:14px;max-width:340px;">
+            <label><span class='profile-label'>Username:</span>
+              <input type="text" id="artistUsername" style="width:100%;padding:8px;border-radius:6px;border:none;background:#181818;color:#ffd700;" disabled />
+            </label>
+            <label><span class='profile-label'>Email:</span>
+              <input type="email" id="artistEmail" style="width:100%;padding:8px;border-radius:6px;border:none;background:#181818;color:#ffd700;" disabled />
+            </label>
+            <label><span class='profile-label'>Phone:</span>
+              <input type="tel" id="artistPhone" style="width:100%;padding:8px;border-radius:6px;border:none;background:#181818;color:#ffd700;" disabled />
+            </label>
+            <div style="display:flex;gap:10px;">
+              <button type="button" id="editBtn" style="background:#ffd700;color:#181818;padding:8px 18px;border-radius:8px;font-weight:bold;border:none;">Edit</button>
+              <button type="submit" id="saveBtn" style="background:#222;color:#ffd700;padding:8px 18px;border-radius:8px;font-weight:bold;border:none;display:none;">Save</button>
+            </div>
+          </form>
+        </div>
+        <div id="artistStats"></div>
+      </section>
+    </main>
+  </div>
+  <script>
+    lucide.createIcons();
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJYntIHuHfLtlpdYXhwbamPFN9X6ADUhU",
+      authDomain: "music-web-app-ecc1e.firebaseapp.com",
+      projectId: "music-web-app-ecc1e",
+      storageBucket: "music-web-app-ecc1e.appspot.com",
+      messagingSenderId: "214514858457",
+      appId: "1:214514858457:web:7c2170f724a33accd241c8",
+    };
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    let currentArtistDocId = null;
+    auth.onAuthStateChanged(async function(user) {
+      if (user) {
+        const doc = await db.collection('users').doc(user.uid).get();
+        currentArtistDocId = user.uid;
+        if (doc.exists) {
+          const data = doc.data();
+          document.getElementById('artistUsername').value = data.username || 'Artist';
+          document.getElementById('artistEmail').value = user.email;
+          document.getElementById('artistPhone').value = data.phone || '';
+        } else {
+          document.getElementById('artistUsername').value = 'Artist';
+          document.getElementById('artistEmail').value = user.email;
+          document.getElementById('artistPhone').value = '';
+        }
+        // Show artist stats (number of uploads)
+        const songs = await db.collection('songs').where('user_id', '==', user.uid).get();
+        document.getElementById('artistStats').innerHTML = `<div><span class='profile-label'>Total Songs Uploaded:</span> ${songs.size}</div>`;
+      } else {
+        document.getElementById('profileInfo').textContent = 'Please log in.';
+      }
+    });
+
+    // Edit/Save logic
+    const form = document.getElementById('artistProfileForm');
+    const usernameInput = document.getElementById('artistUsername');
+    const phoneInput = document.getElementById('artistPhone');
+    const editBtn = document.getElementById('editBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    editBtn.addEventListener('click', function() {
+      usernameInput.disabled = false;
+      phoneInput.disabled = false;
+      saveBtn.style.display = '';
+      editBtn.style.display = 'none';
+    });
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!currentArtistDocId) return;
+      const newUsername = usernameInput.value.trim();
+      const newPhone = phoneInput.value.trim();
+      await db.collection('users').doc(currentArtistDocId).set({ username: newUsername, phone: newPhone }, { merge: true });
+      usernameInput.disabled = true;
+      phoneInput.disabled = true;
+      saveBtn.style.display = 'none';
+      editBtn.style.display = '';
+      alert('Profile updated!');
+    });
+  </script>
+</body>
+</html>

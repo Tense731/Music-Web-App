@@ -135,6 +135,10 @@
     try {
       const userCredential = await auth.signInWithEmailAndPassword(email, password);
       const user = userCredential.user;
+      console.log('Login successful, Firebase user:', user);
+      // Save UID and email to localStorage for extra session persistence (optional)
+      localStorage.setItem('firebase_uid', user.uid);
+      localStorage.setItem('firebase_email', user.email);
       const doc = await db.collection('users').doc(user.uid).get();
       const role = doc.data().role;
       if (role === 'artist') {
