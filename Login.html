@@ -85,6 +85,17 @@
     .login-container .signup-link:hover {
       color: #ffed4e;
     }
+    .login-container .forgot-link {
+      margin-top: 16px;
+      text-align: center;
+      display: block;
+      color: #ffd700;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    .login-container .forgot-link:hover {
+      color: #ffed4e;
+    }
     @media (max-width: 480px) {
       .login-container {
         margin: 40px 20px;
@@ -104,6 +115,7 @@
       <button type="submit">Login</button>
     </form>
     <a href="signup.html" class="signup-link">Don't have an account? Sign Up</a>
+    <a href="#" class="forgot-link" id="forgotPasswordLink">Forgot your password?</a>
   </div>
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -126,8 +138,20 @@
   </script>
 <script>
   lucide.createIcons();
-</script>
-<script>
+  document.getElementById('forgotPasswordLink').onclick = async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    if (!email) {
+      alert('Please enter your email address above first.');
+      return;
+    }
+    try {
+      await auth.sendPasswordResetEmail(email);
+      alert('A password reset link has been sent to your email.');
+    } catch (error) {
+      alert(error.message);
+    }
+  };
   document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const email = document.getElementById('email').value;

@@ -230,6 +230,7 @@
       if (user) updateCartCount();
     });
     // Optionally, update cart count after adding to cart
+    // Listen for custom event to update cart count
     document.addEventListener('cart-updated', updateCartCount);
     // Cart icon click handler (placeholder for future cart page/modal)
     document.getElementById('cartIconBtn').addEventListener('click', function() {
@@ -358,13 +359,16 @@
       customerSongsDiv.innerHTML = '<p>Loading songs...</p>';
       try {
         const snapshot = await db.collection('songs').get();
-        customerSongsDiv.innerHTML = ''; // Clear loading text
-        snapshot.forEach(async doc => {
+        customerSongsDiv.innerHTML = '';
+        const cards = [];
+        snapshot.forEach(doc => {
           const song = doc.data();
           const card = document.createElement('div');
           card.className = 'song-card';
           card.setAttribute('data-title', song.title);
           card.setAttribute('data-artist', song.artist);
+          card.setAttribute('data-doc-id', doc.id);
+          card.setAttribute('data-song', JSON.stringify(song));
           card.innerHTML = `
             <img src="${song.cover_photo_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=80&q=80'}" class="song-img" alt="${song.title}">
             <div class="song-title">${song.title}</div>
@@ -373,30 +377,15 @@
             <div class="song-meta">${song.release_date ? `<b>Release:</b> ${song.release_date}` : ''}</div>
             <div class="song-meta">${song.featured_artist ? `<b>Feat:</b> ${song.featured_artist}` : ''}</div>
             ${song.music_file_url ? `<audio controls class="song-audio"><source src="${song.music_file_url}" type="audio/mpeg">Your browser does not support the audio element.</audio>` : ''}
-            <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;">
-              <button class="cart-btn" style="padding:6px 16px;border-radius:8px;background:#ffd700;color:#222;font-weight:bold;cursor:pointer;border:none;transition:background 0.2s;">Add to Cart</button>
-            </div>
+            <button class="cart-btn" style="display:block;margin:14px auto 0 auto;padding:6px 16px;border-radius:8px;background:#ffd700;color:#222;font-weight:bold;cursor:pointer;border:none;transition:background 0.2s;">Add to Cart</button>
           `;
           customerSongsDiv.appendChild(card);
-          // Add to cart handler
+          // Attach direct event listener to the button
           const cartBtn = card.querySelector('.cart-btn');
-          // Check if already in cart and disable if so
-          let userId = null;
-          try {
-            if (auth.currentUser) {
-              userId = auth.currentUser.uid;
-            }
-          } catch (e) {}
-          if (userId) {
-            try {
-              const cartDoc = await db.collection('carts').doc(userId).collection('items').doc(doc.id).get();
-              if (cartDoc.exists) {
-                cartBtn.textContent = 'Added!';
-                cartBtn.disabled = true;
-              }
-            } catch (e) {}
-          }
-          cartBtn.addEventListener('click', async function() {
+          cartBtn.addEventListener('click', async function(event) {
+            if (cartBtn.disabled) return;
+            cartBtn.textContent = 'Adding...';
+            cartBtn.disabled = true;
             let userId = null;
             try {
               if (auth.currentUser) {
@@ -409,17 +398,35 @@
               return;
             }
             try {
-              await db.collection('carts').doc(userId).collection('items').doc(doc.id).set({
-                songId: doc.id,
-                ...song,
+              const docId = card.getAttribute('data-doc-id');
+              const songData = JSON.parse(card.getAttribute('data-song'));
+              await db.collection('carts').doc(userId).collection('items').doc(docId).set({
+                songId: docId,
+                ...songData,
                 added_at: new Date()
               });
               cartBtn.textContent = 'Added!';
+              cartBtn.style.background = '#ccc';
+              cartBtn.style.color = '#888';
               cartBtn.disabled = true;
-              // Dispatch event to update cart count badge
               document.dispatchEvent(new Event('cart-updated'));
+              updateCartCount();
+              setTimeout(() => {
+                cartBtn.textContent = 'Added!';
+                cartBtn.style.background = '#ffd700';
+                cartBtn.style.color = '#222';
+              }, 1200);
             } catch (err) {
+              cartBtn.textContent = 'Error!';
+              cartBtn.style.background = '#ff4d4d';
+              cartBtn.style.color = '#fff';
+              cartBtn.disabled = false;
               alert('Error adding to cart: ' + err.message);
+              setTimeout(() => {
+                cartBtn.textContent = 'Add to Cart';
+                cartBtn.style.background = '#ffd700';
+                cartBtn.style.color = '#222';
+              }, 1500);
             }
           });
         });
