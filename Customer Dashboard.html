@@ -120,6 +120,30 @@
     .remove-fav:hover {
       color: #ff4d4d;
     }
+    @media (max-width: 900px) {
+      .main-section {
+        padding: 0 2vw;
+      }
+      .sidebar {
+        width: 100vw;
+        left: -100vw;
+        position: fixed;
+        z-index: 1000;
+        height: 100vh;
+        top: 0;
+        transition: left 0.3s;
+      }
+      .sidebar.mobile-visible {
+        left: 0;
+      }
+      .main-content {
+        padding: 0 2vw;
+      }
+      .player {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
     @media (max-width: 700px) {
       .song-list {
         flex-direction: column;
@@ -127,6 +151,9 @@
       }
       .song-card {
         min-width: 0;
+      }
+      .main-section {
+        padding: 0 1vw;
       }
     }
   </style>

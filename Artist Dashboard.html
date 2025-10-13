@@ -176,6 +176,15 @@
       }
     });
   </script>
+  <script>
+    // Ensure Lucide icons render correctly
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.lucide && window.lucide.createIcons) {
+        window.lucide.createIcons();
+      }
+    });
+  </script>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
   <aside class="sidebar" id="sidebar">
     <div class="logo">Boomplay</div>
     <nav>
@@ -189,19 +198,21 @@
   </aside>
   <div class="main-section">
     <header class="topbar">
-      <button class="menu-toggle" id="menuToggle">
-        <i data-lucide="menu"></i>
-      </button>
+      <div class="topbar-row">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
       <span>Welcome, <span id="artist-name"></span>!</span>
       <div class="user-menu">
-        <button class="user-menu-button"><i data-lucide="music"></i> Artist</button>
+  <button class="user-menu-button"><i data-lucide="music" style="font-size:1em;width:1em;height:1em;"></i> Artist</button>
       </div>
     </header>
    <main class="main-content">
   <h2>Artist Dashboard</h2>
   <p>Here you can upload new songs, view your uploaded tracks, and manage your profile.</p>
   <section class="upload-section">
-    <h3><i data-lucide="upload-cloud"></i> Upload New Song</h3>
+  <h3><i data-lucide="upload-cloud" style="font-size:1em;width:1em;height:1em;"></i> Upload New Song</h3>
     <div id="uploadError" style="color:#ff4d4d;display:none;margin-bottom:10px;"></div>
     <div id="uploadLoading" style="display:none;margin-bottom:10px;color:#ffd700;font-weight:bold;"><span class="spinner" style="display:inline-block;width:22px;height:22px;border:3px solid #ffd700;border-top:3px solid #222;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px;"></span>Uploading, please wait...</div>
     <form id="uploadForm" enctype="multipart/form-data">
@@ -221,6 +232,25 @@
   <ul id="uploadedSongs" class="uploaded-songs-list"></ul>
   </section>
   <script>
+    // Hamburger menu logic for sidebar overlay
+    (function() {
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      const menuToggle = document.getElementById('menuToggle');
+      function openSidebar() {
+        if (sidebar) sidebar.classList.add('mobile-visible');
+        if (sidebarOverlay) sidebarOverlay.classList.add('active');
+      }
+      function closeSidebar() {
+        if (sidebar) sidebar.classList.remove('mobile-visible');
+        if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+      }
+      if (menuToggle) menuToggle.addEventListener('click', openSidebar);
+      if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+    })();
+
+    // ...existing code for upload, firestore, etc...
+
     // Handle song upload (Cloudinary only)
     const uploadForm = document.getElementById('uploadForm');
     const uploadedSongs = document.getElementById('uploadedSongs');

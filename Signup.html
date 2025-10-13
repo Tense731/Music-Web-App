@@ -155,19 +155,20 @@
       const userCredential = await auth.createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
-      // 2. Save user info in Firestore (no profilePicURL)
+      // 2. Send email verification
+      await user.sendEmailVerification();
+      alert('A verification email has been sent to your email address. Please verify your email before logging in.');
+
+      // 3. Save user info in Firestore (no profilePicURL)
       await db.collection('users').doc(user.uid).set({
         role,
         username,
         email
       });
 
-      // 3. Redirect based on role
-      if (role === 'artist') {
-        window.location.href = 'Artist Dashboard.html';
-      } else {
-        window.location.href = 'Customer Dashboard.html';
-      }
+      // 4. Sign out user and redirect to login
+      await auth.signOut();
+      window.location.href = 'login.html';
     } catch (error) {
       alert(error.message);
     }

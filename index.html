@@ -20,6 +20,17 @@
     const firestore = firebase.firestore();
   </script>
   <style>
+/* Sidebar auth buttons: hidden by default, styled for mobile */
+.sidebar-auth-buttons {
+  display: none !important;
+  margin: 18px 0 0 0;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 12px 12px 12px;
+  background: #181818;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #ffd70022;
+}
     .song-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -71,10 +82,306 @@
       width: 100%;
       margin-top: 8px;
     }
+    .banner-carousel {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto 18px auto;
+      overflow: hidden;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px #ffd70022;
+      background: #222;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s cubic-bezier(.77,0,.18,1);
+      will-change: transform;
+    }
+    .carousel-img {
+      min-width: 100%;
+      max-width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 16px;
+      box-shadow: 0 1px 8px #ffd70033;
+      user-select: none;
+      pointer-events: none;
+      background: #181818;
+    }
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(24,24,24,0.7);
+      color: #ffd700;
+      border: none;
+      font-size: 2em;
+      padding: 0 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 2;
+      transition: background 0.2s;
+    }
+    .carousel-btn:hover {
+      background: #ffd700;
+      color: #222;
+    }
+    .carousel-btn.prev { left: 10px; }
+    .carousel-btn.next { right: 10px; }
+    @media (max-width: 900px) {
+      .sidebar-auth-buttons {
+        display: flex !important;
+      }
+      .sidebar-auth-buttons .signup-btn,
+      .sidebar-auth-buttons .login-btn {
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 1.08em;
+        padding: 12px 0;
+        margin: 0;
+        border-radius: 8px;
+        font-weight: bold;
+        text-align: center;
+        transition: background 0.2s, color 0.2s;
+      }
+      .sidebar-auth-buttons .signup-btn {
+        background: #ffd700;
+        color: #222;
+        border: none;
+        margin-bottom: 8px;
+      }
+      .sidebar-auth-buttons .signup-btn:hover {
+        background: #fff7b3;
+        color: #222;
+      }
+      .sidebar-auth-buttons .login-btn {
+        background: #222;
+        color: #ffd700;
+        border: 1px solid #ffd700;
+      }
+      .sidebar-auth-buttons .login-btn:hover {
+        background: #ffd700;
+        color: #222;
+      }
+      .main-section {
+        padding: 0 2vw;
+      }
+      .sidebar {
+        width: 80vw;
+        left: -80vw;
+        position: fixed;
+        z-index: 1000;
+        height: 100vh;
+        top: 0;
+        transition: left 0.3s;
+        background: #181818;
+        box-shadow: 2px 0 12px #0005;
+      }
+      .sidebar.mobile-visible {
+        left: 0;
+      }
+      .main-content {
+        padding: 0 2vw;
+      }
+      .player {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .player-controls {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+      }
+      .player-controls button,
+      .player-controls button i,
+      #playBtn,
+      #playBtn i {
+        font-size: 1.1em !important;
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        min-height: 28px !important;
+        padding: 2px 4px !important;
+      }
+      .player-controls i {
+        font-size: 1.1em !important;
+      }
+      .player-controls .progress-bar {
+        flex: 1 1 0;
+        min-width: 60px;
+        max-width: 120px;
+        margin: 0 6px;
+        height: 4px;
+      }
+      .player-controls .song-info {
+        font-size: 0.95em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 40vw;
+      }
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .search-container {
+        width: 100%;
+        margin: 0 0 8px 0;
+      }
+      .user-menu {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+    @media (max-width: 700px) {
+      .song-list {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .main-section {
+        padding: 0 1vw;
+      }
+      .banner-img {
+        min-height: 120px;
+      }
+      .main-content {
+        padding: 0 1vw;
+      }
+      .playlist-list {
+        flex-direction: column;
+        gap: 12px;
+      }
+      .playlist-card {
+        width: 100%;
+        min-width: 0;
+      }
+      .topbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 10px 0 4px 0;
+        background: #181818;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 2px 8px #0002;
+      }
+      .logo {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #ffd700;
+        margin-bottom: 2px;
+        text-align: left;
+        padding-left: 8px;
+      }
+      .topbar-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: 8px;
+        margin-bottom: 4px;
+      }
+      .menu-toggle {
+        margin: 0 0 0 4px;
+        padding: 6px 10px;
+      }
+      .user-menu {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+      }
+      .signup-btn, .login-btn {
+        font-size: 1em;
+        padding: 7px 14px;
+      }
+      .search-container {
+        width: 100%;
+        margin: 0 0 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .search {
+        flex: 1;
+        min-width: 0;
+        font-size: 1em;
+        padding: 7px 10px;
+      }
+      .player-controls button,
+      .player-controls button i,
+      #playBtn,
+      #playBtn i {
+        font-size: 1.1em !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        padding: 4px 6px !important;
+      }
+      .player-controls i {
+        font-size: 1.1em !important;
+      }
+      .desktop-auth-buttons { display: flex; gap: 10px; }
+      .sidebar-auth-buttons { display: none !important; }
+      @media (max-width: 900px) {
+        .desktop-auth-buttons { display: none !important; }
+        .sidebar-auth-buttons { display: flex !important; flex-direction: column; gap: 10px; }
+      }
+    }
+    .banner-marquee {
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto 18px auto;
+      overflow: hidden;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px #ffd70022;
+      background: #222;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .marquee-img {
+      width: 100%;
+      max-width: 700px;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 16px;
+      box-shadow: 0 1px 8px #ffd70033;
+      background: #181818;
+      user-select: none;
+      pointer-events: none;
+      transition: opacity 0.5s;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    @media (max-width: 700px) {
+      .banner-marquee {
+        min-height: 120px;
+      }
+      .marquee-img {
+        height: 120px;
+      }
+    }
   </style>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Boomplay Clone - Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <link rel="stylesheet" href="styles.css" />
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -97,31 +404,42 @@
         <li><a href="settings.html"><i data-lucide="settings"></i> Settings</a></li>
         <li><a href="purchase.html"><i data-lucide="shopping-cart"></i> Purchase</a></li>
       </ul>
+  <div class="sidebar-auth-buttons">
+        <a href="signup.html" class="signup-btn ripple" style="font-size:1em;padding:10px 0;text-align:center;background:#ffd700;color:#222;border-radius:8px;font-weight:bold;">Sign Up</a>
+        <a href="login.html" class="login-btn ripple" style="font-size:1em;padding:10px 0;text-align:center;background:#222;color:#ffd700;border-radius:8px;font-weight:bold;border:1px solid #ffd700;">Login</a>
+      </div>
     </nav>
   </aside>
 
   <!-- Main Section -->
   <div class="main-section">
     <header class="topbar">
-      <!-- Toggle Button -->
-      <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
-        <i data-lucide="menu"></i>
-      </button>
-
+      <div class="topbar-row">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
+          <i data-lucide="menu"></i>
+        </button>
+        <div class="user-menu desktop-auth-buttons">
+          <a href="signup.html" class="signup-btn ripple">Sign Up</a>
+          <a href="login.html" class="login-btn ripple">Login</a>
+        </div>
+      </div>
       <div class="search-container">
         <i data-lucide="search" class="search-icon"></i>
         <input class="search" type="text" placeholder="Search music, artists, albums..." />
-      </div>
-      <div class="user-menu">
-        <a href="signup.html" class="signup-btn ripple">Sign Up</a>
-        <a href="login.html" class="login-btn ripple">Login</a>
       </div>
     </header>
 
     <main class="main-content">
       <section class="banner">
         <h2>Featured Music</h2>
-        <div class="banner-img"></div>
+        <div class="banner-marquee">
+          <div class="marquee-track">
+            <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=800&q=80" alt="Afro Hits" class="marquee-img">
+            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Naija Classics" class="marquee-img">
+            <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80" alt="Pop Vibes" class="marquee-img">
+            <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Jazz" class="marquee-img">
+          </div>
+        </div>
       </section>
 
       <section class="trending">
@@ -146,17 +464,17 @@
   </div>
 
   <!-- Footer Player -->
-  <footer class="player">
-    <div class="player-controls">
-      <button><i data-lucide="skip-back"></i></button>
-      <button id="playBtn"><i data-lucide="play"></i></button>
-      <button><i data-lucide="skip-forward"></i></button>
-      <span class="song-info">Now Playing: Song Title - Artist</span>
-      <input type="range" min="0" max="100" value="0" class="progress-bar"/>
-      <button><i data-lucide="volume-2"></i></button>
-    </div>
-    <audio id="audio-player" src="" preload="auto"></audio>
-  </footer>
+    <footer class="player">
+      <div class="player-controls">
+        <button><i data-lucide="skip-back"></i></button>
+        <button id="playBtn"><i data-lucide="play"></i></button>
+        <button><i data-lucide="skip-forward"></i></button>
+        <button><i data-lucide="volume-2"></i></button>
+        <span class="song-info">Now Playing: Song Title - Artist</span>
+        <input type="range" min="0" max="100" value="0" class="progress-bar"/>
+      </div>
+      <audio id="audio-player" src="" preload="auto"></audio>
+    </footer>
 
   <!-- Scripts -->
   
@@ -222,6 +540,37 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
   lucide.createIcons();
 </script>
+
+  <script>
+  // Marquee auto-scroll logic
+  document.addEventListener('DOMContentLoaded', function() {
+    const marqueeTrack = document.querySelector('.marquee-track');
+    if (marqueeTrack) {
+      // Duplicate images for seamless loop
+      marqueeTrack.innerHTML += marqueeTrack.innerHTML;
+    }
+  });
+  </script>
+
+  <script>
+  // Marquee single-image auto-scroll logic
+  document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('.marquee-img');
+    let current = 0;
+    function showImage(idx) {
+      images.forEach((img, i) => {
+        img.style.display = i === idx ? 'block' : 'none';
+        img.style.opacity = i === idx ? '1' : '0';
+      });
+    }
+    function nextImage() {
+      current = (current + 1) % images.length;
+      showImage(current);
+    }
+    showImage(current);
+    setInterval(nextImage, 3500);
+  });
+  </script>
 
   <script src="main.js"></script>
 </body>
