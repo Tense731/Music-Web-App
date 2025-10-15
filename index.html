@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <!-- Firebase SDKs for Firestore song gallery -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -180,6 +181,9 @@
         transition: left 0.3s;
         background: #181818;
         box-shadow: 2px 0 12px #0005;
+        overflow-y: auto;
+        overflow-x: auto;
+        max-height: 100vh;
       }
       .sidebar.mobile-visible {
         left: 0;
@@ -195,6 +199,7 @@
         display: flex;
         flex-direction: row;
         align-items: center;
+        
         gap: 8px;
         width: 100%;
         justify-content: flex-start;
@@ -377,6 +382,18 @@
         height: 120px;
       }
     }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+    }
+    .main-section {
+      flex: 1 0 auto;
+    }
+    .site-footer {
+      flex-shrink: 0;
+    }
   </style>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -414,10 +431,11 @@
   <!-- Main Section -->
   <div class="main-section">
     <header class="topbar">
-      <div class="topbar-row">
+      <div class="topbar-row" style="display:flex;align-items:center;gap:12px;">
         <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
           <i data-lucide="menu"></i>
         </button>
+        <span style="font-size:1.3em;font-weight:bold;color:#ffd700;letter-spacing:1px;">XTREMEMUSIC</span>
         <div class="user-menu desktop-auth-buttons">
           <a href="signup.html" class="signup-btn ripple">Sign Up</a>
           <a href="login.html" class="login-btn ripple">Login</a>
@@ -475,6 +493,33 @@
       </div>
       <audio id="audio-player" src="" preload="auto"></audio>
     </footer>
+    <footer class="site-footer" style="background:#181818;color:#ffd700;padding:32px 0 18px 0;margin-top:auto;">
+      <div style="max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:32px;padding:0 24px;">
+        <div style="flex:1;min-width:220px;">
+          <h3 style="color:#ffd700;margin-bottom:12px;">About Boomplay</h3>
+          <p style="color:#fff8;line-height:1.6;">Boomplay is your go-to music streaming platform for the latest hits, classic tracks, and exclusive releases from your favorite artists. Discover, stream, and share music anytime, anywhere.</p>
+        </div>
+        <div style="flex:1;min-width:180px;">
+          <h3 style="color:#ffd700;margin-bottom:12px;">Quick Links</h3>
+          <ul style="list-style:none;padding:0;margin:0;">
+            <li><a href="index.html" style="color:#ffd700;text-decoration:none;">Home</a></li>
+            <li><a href="Library.html" style="color:#ffd700;text-decoration:none;">Library</a></li>
+            <li><a href="Playlists.html" style="color:#ffd700;text-decoration:none;">Playlists</a></li>
+            <li><a href="Charts.html" style="color:#ffd700;text-decoration:none;">Charts</a></li>
+            <li><a href="Profile.html" style="color:#ffd700;text-decoration:none;">Profile</a></li>
+          </ul>
+        </div>
+        <div style="flex:1;min-width:180px;">
+          <h3 style="color:#ffd700;margin-bottom:12px;">Follow Us</h3>
+          <div style="display:flex;gap:16px;">
+            <a href="#" style="color:#ffd700;font-size:1.5em;"><i data-lucide="instagram"></i></a>
+            <a href="#" style="color:#ffd700;font-size:1.5em;"><i data-lucide="twitter"></i></a>
+            <a href="#" style="color:#ffd700;font-size:1.5em;"><i data-lucide="facebook"></i></a>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;color:#fff4;margin-top:24px;font-size:0.98em;">&copy; 2025 Boomplay Clone. All rights reserved.</div>
+    </footer>
 
   <!-- Scripts -->
   
@@ -499,36 +544,7 @@ document.addEventListener('DOMContentLoaded', async function() {
           <div class="song-meta">${song.release_date ? `<b>Release:</b> ${song.release_date}` : ''}</div>
           <div class="song-meta">${song.featured_artist ? `<b>Feat:</b> ${song.featured_artist}` : ''}</div>
           ${song.music_file_url ? `<audio controls class="song-audio"><source src="${song.music_file_url}" type="audio/mpeg">Your browser does not support the audio element.</audio>` : ''}
-          <button class="add-to-cart-btn" style="margin-top:10px;padding:8px 18px;border-radius:8px;background:#ffd700;color:#222;font-weight:bold;cursor:pointer;border:none;transition:background 0.2s;">Add to Cart</button>
         `;
-        // Add to Cart logic
-        const addToCartBtn = card.querySelector('.add-to-cart-btn');
-        addToCartBtn.addEventListener('click', async function() {
-          let userId = null;
-          try {
-            // Try to get Firebase Auth user
-            if (firebase.auth().currentUser) {
-              userId = firebase.auth().currentUser.uid;
-            }
-          } catch (e) {}
-          if (!userId) {
-            alert('Please log in to add songs to your cart.');
-            window.location.href = 'login.html';
-            return;
-          }
-          // Save to Firestore under carts/{userId}/items/{songId}
-          try {
-            await firestore.collection('carts').doc(userId).collection('items').doc(doc.id).set({
-              songId: doc.id,
-              ...song,
-              added_at: new Date()
-            });
-            addToCartBtn.textContent = 'Added!';
-            addToCartBtn.disabled = true;
-          } catch (err) {
-            alert('Error adding to cart: ' + err.message);
-          }
-        });
         trendingSongs.appendChild(card);
       });
     } else {

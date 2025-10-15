@@ -1,3 +1,85 @@
+<style>
+    /* Cart Modal Styles */
+
+    #cartModal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.45);
+      justify-content: center;
+      align-items: center;
+    }
+    #cartModal .modal-content {
+      background: #181818;
+      color: #ffd700;
+      border-radius: 14px;
+      padding: 32px 24px 24px 24px;
+      min-width: 320px;
+      max-width: 95vw;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px #0008;
+      position: relative;
+    }
+    #cartModal .close {
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      font-size: 1.5em;
+      color: #ffd700;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #cartModal h3 {
+      margin-top: 0;
+      color: #ffd700;
+      text-align: center;
+    }
+    .cart-song-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #222;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      color: #ffd700;
+    }
+    .cart-song-item img {
+      width: 48px;
+      height: 48px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 2px solid #ffd70044;
+    }
+    .cart-song-item .info {
+      flex: 1;
+    }
+    .cart-song-item .title {
+      font-weight: bold;
+      color: #ffd700;
+    }
+    .cart-song-item .artist {
+      color: #fff8;
+      font-size: 0.98em;
+    }
+  </style>
+  <!-- Cart Modal -->
+  <div id="cartModal">
+    <div class="modal-content">
+      <button class="close" id="closeCartModal">&times;</button>
+      <h3>Your Cart</h3>
+      <div id="cartItemsList">
+        <p style="text-align:center;">Loading...</p>
+      </div>
+    </div>
+  </div>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,18 +96,20 @@
       flex-wrap: wrap;
     }
     .song-card {
-      background: linear-gradient(135deg, #222 60%, #ffd70022 100%);
-      padding: 20px 18px;
-      border-radius: 12px;
-      min-width: 160px;
-      text-align: center;
-      font-size: 1.08rem;
-      font-weight: 500;
-      color: #ffd700;
-      box-shadow: 0 2px 8px #0002;
-      cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
-      position: relative;
+  background: linear-gradient(135deg, #222 60%, #ffd70022 100%);
+  padding: 20px 18px;
+  border-radius: 12px;
+  min-width: 160px;
+  min-height: 320px;
+  text-align: center;
+  font-size: 1.08rem;
+  font-weight: 500;
+  color: #ffd700;
+  box-shadow: 0 2px 8px #0002;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+  position: relative;
+  overflow: hidden;
     }
     .song-card:hover {
       transform: translateY(-4px) scale(1.04);
@@ -73,53 +157,74 @@
       box-shadow: 0 2px 12px #ffd70066;
     }
     .cart-btn {
-      background: linear-gradient(90deg, #222 80%, #ffd700 100%);
-      color: #ffd700;
-      border: 2px solid #ffd70044;
-      transition: background 0.2s, color 0.2s, transform 0.15s;
-    }
-    .cart-btn:hover {
-      background: linear-gradient(90deg, #ffd700 80%, #222 100%);
-      color: #181818;
-      transform: scale(1.07);
-      box-shadow: 0 2px 12px #ffd70066;
-    }
-    .fav-btn:disabled, .cart-btn:disabled {
-      background: #ccc;
-      color: #888;
-      cursor: not-allowed;
-      opacity: 0.7;
-      box-shadow: none;
-    }
-    #favoriteSongs {
-      margin-top: 16px;
-      padding-left: 0;
-      list-style: none;
-    }
-    #favoriteSongs li {
-      background: #222;
-      color: #ffd700;
-      padding: 10px 16px;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      font-weight: 500;
-      box-shadow: 0 1px 4px #ffd70022;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .remove-fav {
-      background: none;
-      border: none;
-      color: #ffd700;
-      font-size: 1.1em;
-      cursor: pointer;
-      margin-left: 10px;
-      transition: color 0.2s;
-    }
-    .remove-fav:hover {
-      color: #ff4d4d;
-    }
+  background: linear-gradient(90deg, #ffd700 60%, #ffec80 100%);
+  color: #181818;
+  border: none;
+  transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
+  min-width: 120px;
+  box-shadow: 0 4px 18px #ffd70055, 0 1.5px 6px #ffd70033;
+  font-weight: bold;
+  font-size: 1.08em;
+  border-radius: 16px;
+  padding: 12px 28px;
+  margin-bottom: 0;
+  margin-top: 0;
+  position: absolute;
+  left: 50%;
+  bottom: 54px;
+  transform: translateX(-50%);
+  z-index: 2;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  opacity: 0.97;
+}
+.cart-btn:hover:not(:disabled) {
+  background: linear-gradient(90deg, #fff7b3 60%, #ffd700 100%);
+  color: #ffd700;
+  transform: translateX(-50%) scale(1.07);
+  box-shadow: 0 6px 24px #ffd70099, 0 2px 8px #ffd70033;
+  opacity: 1;
+}
+.cart-btn:disabled {
+  background: #e0e0e0;
+  color: #888;
+  cursor: not-allowed;
+  opacity: 0.7;
+  box-shadow: none;
+}
+.undo-cart-btn {
+  min-width: 120px;
+  background: linear-gradient(90deg, #ff4d4d 60%, #ffb3b3 100%);
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 16px;
+  padding: 10px 28px;
+  transition: background 0.2s, opacity 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 18px #ff4d4d55, 0 1.5px 6px #ff4d4d33;
+  opacity: 0.97;
+  margin-bottom: 0;
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  z-index: 2;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+.undo-cart-btn:hover:not(:disabled) {
+  background: linear-gradient(90deg, #ffb3b3 60%, #ff4d4d 100%);
+  color: #fff;
+  box-shadow: 0 6px 24px #ff4d4d99, 0 2px 8px #ff4d4d33;
+  opacity: 1;
+}
+.undo-cart-btn:disabled {
+  background: #e0e0e0;
+  color: #888;
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+}
     @media (max-width: 900px) {
       .main-section {
         padding: 0 2vw;
@@ -158,7 +263,7 @@
     }
   </style>
 </head>
-<body>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
   <!-- Firebase App (the core Firebase SDK) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <!-- Firebase Auth -->
@@ -192,7 +297,7 @@
       </ul>
     </nav>
   </aside>
-  <div class="main-section">
+  <div class="main-section" style="flex: 1 0 auto; display: flex; flex-direction: column;">
     <header class="topbar">
       <button class="menu-toggle" id="menuToggle">
         <i data-lucide="menu"></i>
@@ -212,18 +317,22 @@
     function updateCartCount() {
       const user = auth.currentUser;
       const badge = document.getElementById('cart-count-badge');
+      console.log('[Cart] updateCartCount called. User:', user);
       if (!user) {
         badge.style.display = 'none';
         return;
       }
       db.collection('carts').doc(user.uid).collection('items').get().then(snapshot => {
         const count = snapshot.size;
+        console.log('[Cart] Cart count from Firestore:', count);
         if (count > 0) {
           badge.textContent = count;
           badge.style.display = 'inline-block';
         } else {
           badge.style.display = 'none';
         }
+      }).catch(e => {
+        console.error('[Cart] Error fetching cart count:', e);
       });
     }
     auth.onAuthStateChanged(function(user) {
@@ -233,9 +342,46 @@
     // Listen for custom event to update cart count
     document.addEventListener('cart-updated', updateCartCount);
     // Cart icon click handler (placeholder for future cart page/modal)
-    document.getElementById('cartIconBtn').addEventListener('click', function() {
-      alert('Cart feature coming soon!');
-      // In future: window.location.href = 'cart.html';
+    // Cart modal logic
+    const cartModal = document.getElementById('cartModal');
+    const closeCartModal = document.getElementById('closeCartModal');
+    const cartItemsList = document.getElementById('cartItemsList');
+    document.getElementById('cartIconBtn').addEventListener('click', async function() {
+      if (!auth.currentUser) {
+        alert('Please log in to view your cart.');
+        window.location.href = 'login.html';
+        return;
+      }
+      cartModal.style.display = 'flex';
+      cartItemsList.innerHTML = '<p style="text-align:center;">Loading...</p>';
+      try {
+        const cartSnap = await db.collection('carts').doc(auth.currentUser.uid).collection('items').get();
+        if (cartSnap.empty) {
+          cartItemsList.innerHTML = '<p style="text-align:center;">Your cart is empty.</p>';
+        } else {
+          let html = '';
+          cartSnap.forEach(doc => {
+            const song = doc.data();
+            html += `<div class='cart-song-item'>
+              <img src='${song.cover_photo_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=80&q=80'}' alt='${song.title}'>
+              <div class='info'>
+                <div class='title'>${song.title}</div>
+                <div class='artist'>${song.artist}</div>
+              </div>
+            </div>`;
+          });
+          cartItemsList.innerHTML = html;
+        }
+      } catch (e) {
+        cartItemsList.innerHTML = '<p style="color:#ff4d4d;text-align:center;">Error loading cart: ' + e.message + '</p>';
+      }
+    });
+    closeCartModal.addEventListener('click', function() {
+      cartModal.style.display = 'none';
+    });
+    // Close modal when clicking outside content
+    cartModal.addEventListener('click', function(e) {
+      if (e.target === cartModal) cartModal.style.display = 'none';
     });
   </script>
     </header>
@@ -261,184 +407,270 @@
     </div>
     <audio id="audio-player" src="" preload="auto"></audio>
   </footer>
+  <!-- Main JS moved to end of body for correct DOM parsing -->
   <script>
-    lucide.createIcons();
-
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-
-    menuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('mobile-visible');
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-        sidebar.classList.remove('mobile-visible');
-      }
-    });
-  </script>
-  <script>
-
-    // Show customer name from Firestore with improved debug and delayed redirect
-    auth.onAuthStateChanged(async function(user) {
-      console.log('Auth state changed. User:', user);
-      if (user) {
-        try {
-          const doc = await db.collection('users').doc(user.uid).get();
-          console.log('Fetched user doc:', doc.exists ? doc.data() : null);
-          if (doc.exists) {
-            document.getElementById('customer-name').textContent = doc.data().username || 'Customer';
-            document.getElementById('customer-name').title = '';
-          } else {
-            document.getElementById('customer-name').textContent = 'Customer';
-            document.getElementById('customer-name').title = 'No Firestore user document found.';
-          }
-        } catch (e) {
-          document.getElementById('customer-name').textContent = 'Customer';
-          document.getElementById('customer-name').title = 'Error fetching user: ' + e.message;
-          console.error('Error fetching user from Firestore:', e);
-        }
-      } else {
-        document.getElementById('customer-name').textContent = '';
-        document.getElementById('customer-name').title = 'No user logged in. Redirecting...';
-        setTimeout(function() {
-          window.location.href = 'login.html';
-        }, 1000); // Wait 1s before redirect to avoid race conditions
-      }
-    });
-
-    // Handle favorites (demo, stores in localStorage)
-    let favorites = JSON.parse(localStorage.getItem('customer_favorites') || '[]');
-    const favoriteSongs = document.getElementById('favoriteSongs');
-    function renderFavorites() {
-      favoriteSongs.innerHTML = '';
-      favorites.forEach((song, idx) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <div style="display:flex;align-items:center;gap:10px;width:100%">
-            <img src="${song.cover_photo_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=40&q=80'}" style="height:32px;width:32px;border-radius:6px;vertical-align:middle;">
-            <div style="flex:1;">
-              <b>${song.title}</b> - ${song.artist}
-              <span style="margin-left:8px;color:#fff7b3;">${song.genre ? song.genre : ''}</span>
-              <span style="margin-left:8px;color:#fff7b3;">${song.release_date ? song.release_date : ''}</span>
-              <span style="margin-left:8px;color:#fff7b3;">${song.featured_artist ? song.featured_artist : ''}</span>
-            </div>
-            <button class="remove-fav" data-idx="${idx}" title="Remove">&times;</button>
-          </div>
-        `;
-        favoriteSongs.appendChild(li);
+    // All main JS runs after DOM is loaded
+    console.log('[DEBUG] Main JS script loaded at end of body.');
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('[DEBUG] DOMContentLoaded fired, main script running.');
+      lucide.createIcons();
+      const menuToggle = document.getElementById('menuToggle');
+      const sidebar = document.getElementById('sidebar');
+      menuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('mobile-visible');
       });
-      // Remove favorite handler
-      document.querySelectorAll('.remove-fav').forEach(btn => {
+      document.addEventListener('click', (e) => {
+        if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+          sidebar.classList.remove('mobile-visible');
+        }
+      });
+
+      // Show customer name from Firestore with improved debug and delayed redirect
+      auth.onAuthStateChanged(async function(user) {
+        console.log('[DEBUG] Auth state changed. User:', user);
+        if (user) {
+          try {
+            const doc = await db.collection('users').doc(user.uid).get();
+            console.log('[DEBUG] Fetched user doc:', doc.exists ? doc.data() : null);
+            if (doc.exists) {
+              document.getElementById('customer-name').textContent = doc.data().username || 'Customer';
+              document.getElementById('customer-name').title = '';
+            } else {
+              document.getElementById('customer-name').textContent = 'Customer';
+              document.getElementById('customer-name').title = 'No Firestore user document found.';
+            }
+          } catch (e) {
+            document.getElementById('customer-name').textContent = 'Customer';
+            document.getElementById('customer-name').title = 'Error fetching user: ' + e.message;
+            console.error('[DEBUG] Error fetching user from Firestore:', e);
+          }
+        } else {
+          document.getElementById('customer-name').textContent = '';
+          document.getElementById('customer-name').title = 'No user logged in. Redirecting...';
+          setTimeout(function() {
+            window.location.href = 'login.html';
+          }, 1000); // Wait 1s before redirect to avoid race conditions
+        }
+      });
+
+      // Handle favorites (demo, stores in localStorage)
+      let favorites = JSON.parse(localStorage.getItem('customer_favorites') || '[]');
+      const favoriteSongs = document.getElementById('favoriteSongs');
+      function renderFavorites() {
+        favoriteSongs.innerHTML = '';
+        favorites.forEach((song, idx) => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <div style="display:flex;align-items:center;gap:10px;width:100%">
+              <img src="${song.cover_photo_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=40&q=80'}" style="height:32px;width:32px;border-radius:6px;vertical-align:middle;">
+              <div style="flex:1;">
+                <b>${song.title}</b> - ${song.artist}
+                <span style="margin-left:8px;color:#fff7b3;">${song.genre ? song.genre : ''}</span>
+                <span style="margin-left:8px;color:#fff7b3;">${song.release_date ? song.release_date : ''}</span>
+                <span style="margin-left:8px;color:#fff7b3;">${song.featured_artist ? song.featured_artist : ''}</span>
+              </div>
+              <button class="remove-fav" data-idx="${idx}" title="Remove">&times;</button>
+            </div>
+          `;
+          favoriteSongs.appendChild(li);
+        });
+        // Remove favorite handler
+        document.querySelectorAll('.remove-fav').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const idx = this.getAttribute('data-idx');
+            favorites.splice(idx, 1);
+            localStorage.setItem('customer_favorites', JSON.stringify(favorites));
+            renderFavorites();
+          });
+        });
+      }
+      renderFavorites();
+      document.querySelectorAll('.fav-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-          const idx = this.getAttribute('data-idx');
-          favorites.splice(idx, 1);
-          localStorage.setItem('customer_favorites', JSON.stringify(favorites));
-          renderFavorites();
+          const card = btn.closest('.song-card');
+          const title = card.getAttribute('data-title');
+          const artist = card.getAttribute('data-artist');
+          // Prevent duplicates
+          if (!favorites.some(fav => fav.title === title && fav.artist === artist)) {
+            favorites.push({ title, artist });
+            localStorage.setItem('customer_favorites', JSON.stringify(favorites));
+            renderFavorites();
+          }
         });
       });
-    }
-    renderFavorites();
-    document.querySelectorAll('.fav-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const card = btn.closest('.song-card');
-        const title = card.getAttribute('data-title');
-        const artist = card.getAttribute('data-artist');
-        // Prevent duplicates
-        if (!favorites.some(fav => fav.title === title && fav.artist === artist)) {
-          favorites.push({ title, artist });
-          localStorage.setItem('customer_favorites', JSON.stringify(favorites));
-          renderFavorites();
-        }
-      });
-    });
 
-    // Fetch and display all songs for the customer
-    async function fetchCustomerSongs() {
-      const customerSongsDiv = document.getElementById('customerSongs');
-      customerSongsDiv.innerHTML = '<p>Loading songs...</p>';
-      try {
-        const snapshot = await db.collection('songs').get();
-        customerSongsDiv.innerHTML = '';
-        const cards = [];
-        snapshot.forEach(doc => {
-          const song = doc.data();
-          const card = document.createElement('div');
-          card.className = 'song-card';
-          card.setAttribute('data-title', song.title);
-          card.setAttribute('data-artist', song.artist);
-          card.setAttribute('data-doc-id', doc.id);
-          card.setAttribute('data-song', JSON.stringify(song));
-          card.innerHTML = `
-            <img src="${song.cover_photo_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=80&q=80'}" class="song-img" alt="${song.title}">
-            <div class="song-title">${song.title}</div>
-            <div class="song-artist">${song.artist}</div>
-            <div class="song-meta">${song.genre ? `<b>Genre:</b> ${song.genre}` : ''}</div>
-            <div class="song-meta">${song.release_date ? `<b>Release:</b> ${song.release_date}` : ''}</div>
-            <div class="song-meta">${song.featured_artist ? `<b>Feat:</b> ${song.featured_artist}` : ''}</div>
-            ${song.music_file_url ? `<audio controls class="song-audio"><source src="${song.music_file_url}" type="audio/mpeg">Your browser does not support the audio element.</audio>` : ''}
-            <button class="cart-btn" style="display:block;margin:14px auto 0 auto;padding:6px 16px;border-radius:8px;background:#ffd700;color:#222;font-weight:bold;cursor:pointer;border:none;transition:background 0.2s;">Add to Cart</button>
-          `;
-          customerSongsDiv.appendChild(card);
-          // Attach direct event listener to the button
-          const cartBtn = card.querySelector('.cart-btn');
-          cartBtn.addEventListener('click', async function(event) {
-            if (cartBtn.disabled) return;
-            cartBtn.textContent = 'Adding...';
-            cartBtn.disabled = true;
-            let userId = null;
+      // Render all songs and handle cart with event delegation
+      async function renderCustomerSongs() {
+        const customerSongsDiv = document.getElementById('customerSongs');
+        customerSongsDiv.innerHTML = '<p>Loading songs...</p>';
+        try {
+          const snapshot = await db.collection('songs').get();
+          customerSongsDiv.innerHTML = '';
+          let cartItems = {};
+          let userId = null;
+          if (auth.currentUser) {
+            userId = auth.currentUser.uid;
             try {
+              const cartSnap = await db.collection('carts').doc(userId).collection('items').get();
+              cartSnap.forEach(itemDoc => {
+                cartItems[itemDoc.id] = true;
+              });
+            } catch (e) {}
+          }
+          let songList = [];
+          snapshot.forEach(doc => {
+            const song = doc.data();
+            songList.push({ ...song, docId: doc.id });
+            // Create the song card
+            const card = document.createElement('div');
+            card.className = 'song-card';
+            card.setAttribute('data-title', song.title);
+            card.setAttribute('data-artist', song.artist);
+            card.setAttribute('data-doc-id', doc.id);
+            card.setAttribute('data-song', JSON.stringify(song));
+            let html = `
+              <img src="${song.cover_photo_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=80&q=80'}" class="song-img" alt="${song.title}">
+              <div class="song-title">${song.title}</div>
+              <div class="song-artist">${song.artist}</div>
+              <div class="song-meta">${song.genre ? `<b>Genre:</b> ${song.genre}` : ''}</div>
+              <div class="song-meta">${song.release_date ? `<b>Release:</b> ${song.release_date}` : ''}</div>
+              <div class="song-meta">${song.featured_artist ? `<b>Feat:</b> ${song.featured_artist}` : ''}</div>
+            `;
+            if (song.music_file_url) {
+              html += `<audio class="song-audio" controls style="margin-bottom: 48px;"><source src="${song.music_file_url}" type="audio/mpeg">Your browser does not support the audio element.</audio>`;
+            }
+            // Place Add to Cart and Undo buttons directly under the audio player
+            html += `<button class="cart-btn" data-doc-id="${doc.id}" ${cartItems[doc.id] ? 'disabled' : ''} style="position:absolute;left:50%;bottom:38px;transform:translateX(-50%);z-index:2;">${cartItems[doc.id] ? 'Added!' : 'Add to Cart'}</button>`;
+            html += `<button class="undo-cart-btn" data-doc-id="${doc.id}" ${cartItems[doc.id] ? '' : 'disabled'} style="position:absolute;left:50%;bottom:0px;transform:translateX(-50%);z-index:2;">Undo</button>`;
+            card.innerHTML = html;
+            customerSongsDiv.appendChild(card);
+            // Attach event listeners to the Add to Cart and Undo buttons
+            const cartBtn = card.querySelector('.cart-btn');
+            const undoBtn = card.querySelector('.undo-cart-btn');
+            cartBtn.addEventListener('click', async function() {
+              if (cartBtn.disabled) return;
+              cartBtn.textContent = 'Adding...';
+              cartBtn.disabled = true;
+              let userId = null;
               if (auth.currentUser) {
                 userId = auth.currentUser.uid;
               }
-            } catch (e) {}
-            if (!userId) {
-              alert('Please log in to add songs to your cart.');
-              window.location.href = 'login.html';
-              return;
-            }
-            try {
-              const docId = card.getAttribute('data-doc-id');
+              if (!userId) {
+                alert('Please log in to add songs to your cart.');
+                window.location.href = 'login.html';
+                return;
+              }
+              const docId = cartBtn.getAttribute('data-doc-id');
               const songData = JSON.parse(card.getAttribute('data-song'));
-              await db.collection('carts').doc(userId).collection('items').doc(docId).set({
-                songId: docId,
-                ...songData,
-                added_at: new Date()
-              });
-              cartBtn.textContent = 'Added!';
-              cartBtn.style.background = '#ccc';
-              cartBtn.style.color = '#888';
-              cartBtn.disabled = true;
-              document.dispatchEvent(new Event('cart-updated'));
-              updateCartCount();
-              setTimeout(() => {
+              try {
+                await db.collection('carts').doc(userId).collection('items').doc(docId).set({
+                  songId: docId,
+                  ...songData,
+                  added_at: new Date()
+                });
                 cartBtn.textContent = 'Added!';
-                cartBtn.style.background = '#ffd700';
-                cartBtn.style.color = '#222';
-              }, 1200);
-            } catch (err) {
-              cartBtn.textContent = 'Error!';
-              cartBtn.style.background = '#ff4d4d';
-              cartBtn.style.color = '#fff';
-              cartBtn.disabled = false;
-              alert('Error adding to cart: ' + err.message);
-              setTimeout(() => {
+                cartBtn.style.background = '#ccc';
+                cartBtn.style.color = '#888';
+                cartBtn.disabled = true;
+                // Enable Undo button
+                undoBtn.disabled = false;
+                undoBtn.style.opacity = '1';
+                undoBtn.style.cursor = 'pointer';
+                updateCartCount();
+              } catch (err) {
+                cartBtn.textContent = 'Error!';
+                cartBtn.style.background = '#ff4d4d';
+                cartBtn.style.color = '#fff';
+                cartBtn.disabled = false;
+                alert('Error adding to cart: ' + err.message);
+                setTimeout(() => {
+                  cartBtn.textContent = 'Add to Cart';
+                  cartBtn.style.background = '#ffd700';
+                  cartBtn.style.color = '#222';
+                }, 1500);
+              }
+            });
+            undoBtn.addEventListener('click', async function() {
+              if (undoBtn.disabled) return;
+              undoBtn.textContent = 'Undoing...';
+              undoBtn.disabled = true;
+              let userId = null;
+              if (auth.currentUser) {
+                userId = auth.currentUser.uid;
+              }
+              if (!userId) {
+                alert('Please log in to update your cart.');
+                window.location.href = 'login.html';
+                return;
+              }
+              const docId = undoBtn.getAttribute('data-doc-id');
+              try {
+                await db.collection('carts').doc(userId).collection('items').doc(docId).delete();
+                // Update Add to Cart button
                 cartBtn.textContent = 'Add to Cart';
                 cartBtn.style.background = '#ffd700';
                 cartBtn.style.color = '#222';
-              }, 1500);
-            }
+                cartBtn.disabled = false;
+                // Disable Undo button
+                undoBtn.disabled = true;
+                undoBtn.style.opacity = '0.5';
+                undoBtn.style.cursor = 'not-allowed';
+                undoBtn.textContent = 'Undo';
+                updateCartCount();
+              } catch (err) {
+                undoBtn.textContent = 'Error!';
+                undoBtn.style.background = '#ff4d4d';
+                setTimeout(() => {
+                  undoBtn.textContent = 'Undo';
+                  undoBtn.style.background = '#ff4d4d';
+                }, 1500);
+              }
+            });
           });
-        });
-      } catch (e) {
-        customerSongsDiv.innerHTML = '<p class="error">Error loading songs: ' + e.message + '</p>';
-        console.error('Error loading songs from Firestore:', e);
+          // Attach event listeners directly to each Add to Cart button
+          // (Removed duplicate event listeners for cart-btn)
+          console.log('[DEBUG] Songs rendered to DOM and cart button listeners attached.');
+        } catch (e) {
+          customerSongsDiv.innerHTML = '<p class="error">Error loading songs: ' + e.message + '</p>';
+          console.error('[DEBUG] Error loading songs from Firestore:', e);
+        }
       }
-    }
-    // Only run fetchCustomerSongs on DOMContentLoaded
-    document.addEventListener('DOMContentLoaded', function() {
-      fetchCustomerSongs();
+
+      // Event delegation for cart button clicks
+      auth.onAuthStateChanged(function(user) {
+        if (user) {
+          renderCustomerSongs();
+        }
+      });
     });
   </script>
+  </script>
+  <footer class="site-footer" style="background:#181818;color:#ffd700;padding:32px 0 18px 0;margin-top:auto;">
+    <div style="max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:32px;padding:0 24px;">
+      <div style="flex:1;min-width:220px;">
+        <h3 style="color:#ffd700;margin-bottom:12px;">About Boomplay</h3>
+        <p style="color:#fff8;line-height:1.6;">Boomplay is your go-to music streaming platform for the latest hits, classic tracks, and exclusive releases from your favorite artists. Discover, stream, and share music anytime, anywhere.</p>
+      </div>
+      <div style="flex:1;min-width:180px;">
+        <h3 style="color:#ffd700;margin-bottom:12px;">Quick Links</h3>
+        <ul style="list-style:none;padding:0;margin:0;">
+          <li><a href="index.html" style="color:#ffd700;text-decoration:none;">Home</a></li>
+          <li><a href="Library.html" style="color:#ffd700;text-decoration:none;">Library</a></li>
+          <li><a href="Playlists.html" style="color:#ffd700;text-decoration:none;">Playlists</a></li>
+          <li><a href="Charts.html" style="color:#ffd700;text-decoration:none;">Charts</a></li>
+          <li><a href="Profile.html" style="color:#ffd700;text-decoration:none;">Profile</a></li>
+        </ul>
+      </div>
+      <div style="flex:1;min-width:180px;">
+        <h3 style="color:#ffd700;margin-bottom:12px;">Follow Us</h3>
+        <div style="display:flex;gap:16px;">
+          <a href="#" style="color:#ffd700;font-size:1.5em;"><i data-lucide="instagram"></i></a>
+          <a href="#" style="color:#ffd700;font-size:1.5em;"><i data-lucide="twitter"></i></a>
+          <a href="#" style="color:#ffd700;font-size:1.5em;"><i data-lucide="facebook"></i></a>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;color:#fff4;margin-top:24px;font-size:0.98em;">&copy; 2024 Boomplay Clone. All rights reserved.</div>
+  </footer>
 </body>
 </html>

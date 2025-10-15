@@ -6,8 +6,9 @@
   <title>Playlists - Boomplay Clone</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
   <aside class="sidebar">
+
     <div class="logo">Boomplay</div>
     <nav>
       <ul>
@@ -20,7 +21,7 @@
       </ul>
     </nav>
   </aside>
-  <div class="main-section">
+  <div class="main-section" style="flex: 1 0 auto; display: flex; flex-direction: column;">
     <header class="topbar">
       <input class="search" type="text" placeholder="Search playlists..." />
       <div class="user-menu">User</div>
@@ -53,6 +54,33 @@
       <button>🔊</button>
     </div>
     <audio id="audio-player" src="" preload="auto"></audio>
+  </footer>
+  <footer class="site-footer" style="background:#181818;color:#ffd700;padding:32px 0 18px 0;margin-top:auto;">
+    <div style="max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:32px;padding:0 24px;">
+      <div style="flex:1;min-width:220px;">
+        <h3 style="color:#ffd700;margin-bottom:12px;">About Boomplay</h3>
+        <p style="color:#fff8;line-height:1.6;">Boomplay is your go-to music streaming platform for the latest hits, classic tracks, and exclusive releases from your favorite artists. Discover, stream, and share music anytime, anywhere.</p>
+      </div>
+      <div style="flex:1;min-width:180px;">
+        <h3 style="color:#ffd700;margin-bottom:12px;">Quick Links</h3>
+        <ul style="list-style:none;padding:0;margin:0;">
+          <li><a href="index.html" style="color:#ffd700;text-decoration:none;">Home</a></li>
+          <li><a href="Library.html" style="color:#ffd700;text-decoration:none;">Library</a></li>
+          <li><a href="Playlists.html" style="color:#ffd700;text-decoration:none;">Playlists</a></li>
+          <li><a href="Charts.html" style="color:#ffd700;text-decoration:none;">Charts</a></li>
+          <li><a href="Profile.html" style="color:#ffd700;text-decoration:none;">Profile</a></li>
+        </ul>
+      </div>
+      <div style="flex:1;min-width:180px;">
+        <h3 style="color:#ffd700;margin-bottom:12px;">Follow Us</h3>
+        <div style="display:flex;gap:16px;">
+          <a href="#" style="color:#ffd700;font-size:1.5em;"><i data-lucide="instagram"></i></a>
+          <a href="#" style="color:#ffd700;font-size:1.5em;"><i data-lucide="twitter"></i></a>
+          <a href="#" style="color:#ffd700;font-size:1.5em;"><i data-lucide="facebook"></i></a>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;color:#fff4;margin-top:24px;font-size:0.98em;">&copy; 2024 Boomplay Clone. All rights reserved.</div>
   </footer>
   <script src="main.js"></script>
 </body>
