@@ -5,6 +5,325 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Charts - Boomplay Clone</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Responsive improvements for all sections */
+    html {
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      background: #181818;
+      color: #ffd700;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+    }
+    .main-section {
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-width: 0;
+    }
+    .main-content {
+      width: 100%;
+      min-width: 0;
+      padding: 0 2vw;
+    }
+    .sidebar {
+      width: 260px;
+      min-width: 180px;
+      background: #181818;
+      color: #ffd700;
+      position: relative;
+      z-index: 100;
+      box-shadow: 2px 0 12px #0005;
+      height: 100vh;
+      overflow-y: auto;
+      transition: left 0.3s;
+    }
+    .sidebar.mobile-visible {
+      left: 0;
+      position: fixed;
+      width: 80vw;
+      max-width: 320px;
+      top: 0;
+      height: 100vh;
+      z-index: 1000;
+    }
+    .sidebar-overlay.active {
+      display: block;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 999;
+    }
+    .topbar {
+      width: 100%;
+      background: #181818;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 2px 8px #0002;
+      padding: 12px 0 8px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .topbar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+    .user-menu {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .search-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .search {
+      flex: 1;
+      min-width: 0;
+      font-size: 1em;
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: none;
+      background: #222;
+      color: #ffd700;
+    }
+    .search:focus {
+      outline: 2px solid #ffd700;
+    }
+    .player {
+      width: 100%;
+      background: #222;
+      color: #ffd700;
+      box-shadow: 0 -2px 8px #ffd70022;
+      padding: 12px 0 8px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .player-controls {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
+    .player-controls button,
+    .player-controls button i,
+    #playBtn,
+    #playBtn i {
+      font-size: 1.1em !important;
+      width: 32px !important;
+      height: 32px !important;
+      min-width: 32px !important;
+      min-height: 32px !important;
+      padding: 4px 6px !important;
+      border-radius: 8px;
+      background: #181818;
+      color: #ffd700;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .player-controls button:hover {
+      background: #ffd700;
+      color: #181818;
+    }
+    .player-controls .progress-bar {
+      flex: 1 1 0;
+      min-width: 60px;
+      max-width: 120px;
+      margin: 0 6px;
+      height: 4px;
+      background: #ffd700;
+      border-radius: 2px;
+    }
+    .player-controls .song-info {
+      font-size: 0.95em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 40vw;
+    }
+    .site-footer {
+      flex-shrink: 0;
+      width: 100%;
+      background: #181818;
+      color: #ffd700;
+      padding: 32px 0 18px 0;
+      margin-top: auto;
+    }
+    .site-footer ul {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+    .site-footer a {
+      color: #ffd700;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .site-footer a:hover {
+      color: #fff7b3 !important;
+    }
+    .site-footer i {
+      vertical-align: middle;
+    }
+    @media (max-width: 900px) {
+      .sidebar {
+        width: 80vw;
+        min-width: 0;
+        left: -80vw;
+        position: fixed;
+        z-index: 1000;
+        height: 100vh;
+        top: 0;
+        transition: left 0.3s;
+        background: #181818;
+        box-shadow: 2px 0 12px #0005;
+        overflow-y: auto;
+        max-height: 100vh;
+      }
+      .sidebar.mobile-visible {
+        left: 0;
+      }
+      .main-section {
+        padding: 0 2vw;
+      }
+      .main-content {
+        padding: 0 2vw;
+      }
+      .player {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .site-footer > div {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 18px !important;
+      }
+      .site-footer > div > div {
+        text-align: center !important;
+        margin-bottom: 0 !important;
+      }
+      .topbar-row {
+        flex-direction: row;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+    }
+    @media (max-width: 700px) {
+      .song-list {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .main-section {
+        padding: 0 1vw;
+      }
+      .main-content {
+        padding: 0 1vw;
+      }
+      .banner-marquee {
+        min-height: 120px;
+      }
+      .marquee-img {
+        height: 120px;
+      }
+      .playlist-list {
+        flex-direction: column;
+        gap: 12px;
+      }
+      .playlist-card {
+        width: 100%;
+        min-width: 0;
+      }
+      .topbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 10px 0 4px 0;
+        background: #181818;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 2px 8px #0002;
+      }
+      .logo {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #ffd700;
+        margin-bottom: 2px;
+        text-align: left;
+        padding-left: 8px;
+      }
+      .topbar-row {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        width: 100%;
+        margin-bottom: 4px;
+      }
+      .menu-toggle {
+        margin: 0 0 0 4px;
+        padding: 6px 10px;
+      }
+      .user-menu {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+      }
+      .signup-btn, .login-btn {
+        font-size: 1em;
+        padding: 7px 14px;
+      }
+      .search-container {
+        width: 100%;
+        margin: 0 0 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .search {
+        flex: 1;
+        min-width: 0;
+        font-size: 1em;
+        padding: 7px 10px;
+      }
+      .player-controls button,
+      .player-controls button i,
+      #playBtn,
+      #playBtn i {
+        font-size: 1.1em !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        padding: 4px 6px !important;
+      }
+      .player-controls i {
+        font-size: 1.1em !important;
+      }
+    }
+  </style>
 </head>
 <body style="display: flex; flex-direction: column; min-height: 100vh;">
   <aside class="sidebar">
@@ -58,32 +377,32 @@
     </div>
     <audio id="audio-player" src="" preload="auto"></audio>
   </footer>
-  <footer class="site-footer" style="background:#181818;color:#ffd700;padding:32px 0 18px 0;margin-top:auto;">
-    <div style="max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:32px;padding:0 24px;">
+  <footer class="site-footer">
+    <div class="footer-inner">
       <div style="flex:1;min-width:220px;">
-        <h3 style="color:#ffd700;margin-bottom:12px;">About Boomplay</h3>
-        <p style="color:#fff8;line-height:1.6;">Boomplay is your go-to music streaming platform for the latest hits, classic tracks, and exclusive releases from your favorite artists. Discover, stream, and share music anytime, anywhere.</p>
+        <h3>About Boomplay</h3>
+        <p>Boomplay is your go-to music streaming platform for the latest hits, classic tracks, and exclusive releases from your favorite artists. Discover, stream, and share music anytime, anywhere.</p>
       </div>
       <div style="flex:1;min-width:180px;">
-        <h3 style="color:#ffd700;margin-bottom:12px;">Quick Links</h3>
-        <ul style="list-style:none;padding:0;margin:0;">
-          <li><a href="index.html" style="color:#ffd700;text-decoration:none;">Home</a></li>
-          <li><a href="Library.html" style="color:#ffd700;text-decoration:none;">Library</a></li>
-          <li><a href="Playlists.html" style="color:#ffd700;text-decoration:none;">Playlists</a></li>
-          <li><a href="Charts.html" style="color:#ffd700;text-decoration:none;">Charts</a></li>
-          <li><a href="Profile.html" style="color:#ffd700;text-decoration:none;">Profile</a></li>
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="Library.html">Library</a></li>
+          <li><a href="Playlists.html">Playlists</a></li>
+          <li><a href="Charts.html">Charts</a></li>
+          <li><a href="Profile.html">Profile</a></li>
         </ul>
       </div>
       <div style="flex:1;min-width:180px;">
-        <h3 style="color:#ffd700;margin-bottom:12px;">Follow Us</h3>
-        <div style="display:flex;gap:16px;">
-          <a href="#" style="color:#ffd700;font-size:1.5em;"><i data-lucide="instagram"></i></a>
-          <a href="#" style="color:#ffd700;font-size:1.5em;"><i data-lucide="twitter"></i></a>
-          <a href="#" style="color:#ffd700;font-size:1.5em;"><i data-lucide="facebook"></i></a>
+        <h3>Follow Us</h3>
+        <div class="social" data-social>
+          <a href="#"><i data-lucide="instagram"></i></a>
+          <a href="#"><i data-lucide="twitter"></i></a>
+          <a href="#"><i data-lucide="facebook"></i></a>
         </div>
       </div>
     </div>
-    <div style="text-align:center;color:#fff4;margin-top:24px;font-size:0.98em;">&copy; 2024 Boomplay Clone. All rights reserved.</div>
+    <div class="copyright">&copy; 2024 Boomplay Clone. All rights reserved.</div>
   </footer>
   <script src="main.js"></script>
 </body>
